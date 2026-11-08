@@ -707,6 +707,10 @@ canvas[data-sprite="hero"] { width: auto; }
 .footer-links { min-width: 0; max-width: 100%; }
 .footer-links a { overflow-wrap: anywhere; font-family: var(--font-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--ash-300); text-decoration: none; }
 .footer-links a:hover { color: var(--ruby-glow); }
+/* pixel logos next to the GitHub / LinkedIn links (16x16 art at exactly 2x, so the pixels stay even) */
+.icon-link { display: inline-flex; align-items: center; gap: 10px; }
+.link-icon { width: 32px; height: 32px; image-rendering: pixelated; flex: none; transition: transform .2s steps(2); }
+.icon-link:hover .link-icon { transform: translateY(-2px); }
 .palette-strip { display: flex; height: 8px; margin-bottom: 30px; }
 .palette-strip i { flex: 1; }
 

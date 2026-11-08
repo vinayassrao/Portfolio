@@ -14,10 +14,10 @@ PROFILE = {
         "Open to backend, data engineering, DevOps/SRE and game-industry roles, "
         "remote or international."
     ),
-    # Add your links here and they appear in the footer / contact page.
+    # Links shown in the footer and on the contact page (icon: a pixel logo in img/icons/<icon>.png).
     "links": [
-        # {"label": "GitHub", "url": "https://github.com/your-handle"},
-        # {"label": "LinkedIn", "url": "https://www.linkedin.com/in/your-handle"},
+        {"label": "GitHub", "url": "https://github.com/vinayassrao", "icon": "github"},
+        {"label": "LinkedIn", "url": "https://www.linkedin.com/in/vinayasrao/", "icon": "linkedin"},
     ],
 }
 

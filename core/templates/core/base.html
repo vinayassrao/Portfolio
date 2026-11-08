@@ -51,7 +51,7 @@
         <p>© {% now "Y" %} {{ PROFILE.name }} · Built with Django, drawn pixel by pixel.</p>
         <div class="footer-links">
           <a href="mailto:{{ PROFILE.email }}">{{ PROFILE.email }}</a>
-          {% for link in PROFILE.links %}<a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a>{% endfor %}
+          {% for link in PROFILE.links %}<a class="icon-link" href="{{ link.url }}" target="_blank" rel="noopener">{% if link.icon %}<img class="link-icon" src="{% static 'core/img/icons/' %}{{ link.icon }}.png?v={{ ASSET_V }}" alt="" width="16" height="16">{% endif %}{{ link.label }}</a>{% endfor %}
         </div>
       </div>
     </div>
