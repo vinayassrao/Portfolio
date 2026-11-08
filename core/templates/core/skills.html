@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% block title %}Skills{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <span class="chapter" data-reveal="left"><b>CH.04</b> · Skills</span>
+    <h1 data-split data-glitch>Inventory</h1>
+    <p class="lead" data-reveal="up" data-delay="400">Everything in the bag, from languages and APIs to pipelines and cloud.</p>
+  </div>
+  <div class="ghost" data-parallax="0.25" aria-hidden="true">ITEMS</div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="inventory">
+      {% for g in groups %}
+      <div class="bag px-frame" data-reveal="rise" data-delay="{% cycle '0' '140' %}">
+        <div class="bag-head">
+          <canvas data-sprite="{{ g.sprite }}" data-scale="3"></canvas>
+          <h3>{{ g.name }}</h3>
+          <span>{{ g.items|length }} items</span>
+        </div>
+        <div class="slots" data-stagger="45" data-reveal-children="scale">
+          {% for it in g.items %}<div class="slot">{{ it }}</div>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> In progress</span>
+      <h2 data-reveal="pixel">Next unlocks</h2>
+      <p data-reveal="up">Where the experience points are going right now.</p>
+    </div>
+    <div class="unlocks" data-stagger="120">
+      {% for u in unlocks %}
+      <div class="unlock">
+        <div class="bar-label"><span style="color:var(--ash-100);font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;font-size:1rem">{{ u.name }}</span><span>{{ u.note }}</span></div>
+        <div class="bar {% cycle 'green' 'indigo' '' %}" data-fill="{{ u.value }}" role="img" aria-label="{{ u.name }} in progress"><i></i></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

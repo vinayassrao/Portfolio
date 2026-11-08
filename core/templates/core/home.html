@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}{{ PROFILE.name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow" data-reveal="pixel">Player one · ready</div>
+      <h1 data-split data-glitch>{{ PROFILE.name }}</h1>
+      <div class="hero-role" aria-live="off"><span data-typer='["{{ roles|join:'","' }}"]'>{{ roles.0 }}</span><span class="caret" aria-hidden="true"></span></div>
+      <p class="hero-pitch" data-reveal="up" data-delay="900">{{ PROFILE.pitch }}</p>
+      <div class="btn-row" data-reveal="up" data-delay="1100">
+        <a class="btn" href="#room">▶ Step into the room</a>
+        <a class="btn btn--indigo" href="{% url 'projects' %}">View projects <span class="arrow">→</span></a>
+      </div>
+      <div class="hero-meta" data-reveal="up" data-delay="1300">
+        <span>{{ PROFILE.location }}</span><span>Remote / international</span><span>4+ yrs @ IBM</span>
+      </div>
+    </div>
+    <div class="hero-stage" aria-hidden="true" data-reveal="scale" data-delay="400">
+      <div class="halo"></div>
+      <div class="ring"></div>
+      <div class="orbit">
+        {% for h in hobbies %}<div class="orbit-item" style="--i:{{ forloop.counter0 }};--c:{{ h.color }}"><img class="orbit-icon" src="{% static 'core/img/hobbies/' %}{{ h.key }}.png?v={{ ASSET_V }}" alt="" title="{{ h.label }}" width="56" height="56"></div>
+        {% endfor %}
+      </div>
+      <div class="hero-figure">
+        <canvas data-casual-idle data-sheet="{% static 'core/img/hero/herohd-idle.png' %}?v={{ ASSET_V }}"></canvas>
+      </div>
+    </div>
+  </div>
+  <a class="scroll-cue" href="#stats">SCROLL<i></i></a>
+</section>
+
+<section id="stats" class="section" style="padding-top:20px">
+  <div class="wrap">
+    <div class="stats" data-stagger="110">
+      {% for s in stats %}
+      <div class="stat px-frame{% cycle '' ' px-frame--ruby' ' px-frame--green' ' px-frame--ash' %}" data-tilt>
+        <b data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</b>
+        <span>{{ s.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div class="marquee-track">
+  {% for t in stack %}<span>{{ t }}</span>{% endfor %}{% for t in stack %}<span>{{ t }}</span>{% endfor %}
+</div></div>
+<div class="marquee marquee--rev" aria-hidden="true"><div class="marquee-track">
+  {% for t in stack reversed %}<span>{{ t }}</span>{% endfor %}{% for t in stack reversed %}<span>{{ t }}</span>{% endfor %}
+</div></div>
+
+
+<section id="room" class="section room-section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> Look around</span>
+      <h2 data-reveal="pixel">Step into the room</h2>
+      <p data-reveal="up">Click anything in the room and he'll go there for you: the <b class="accent-ruby">setup</b> holds my projects, the <b class="accent-ruby">certificate</b> is about me, the <b class="accent-ruby">paper pile</b> is my experience, the <b class="accent-ruby">bookshelf</b> my skills, and the <b class="accent-ruby">phone</b> gets you in touch. Or click the floor and walk him around with <kbd>←</kbd> <kbd>→</kbd>, then <kbd>↑</kbd> to open.</p>
+    </div>
+  </div>
+  <div class="room-holder" data-reveal="rise">
+    <div class="room" data-room="{% static 'core/img/room/' %}" data-hero="{% static 'core/img/hero/herohd-casual.png' %}?v={{ ASSET_V }}" tabindex="0" aria-label="Vinaya's room. Each object opens a page.">
+      <img class="room-img" src="{% static 'core/img/room/room.png' %}?v={{ ASSET_V }}" alt="A late-night pixel-art room: a framed certificate, a desk piled with papers, a gaming PC setup, a bookshelf and a phone on a side table." width="429" height="248">
+      <canvas class="room-fx" aria-hidden="true"></canvas>
+      <a class="room-obj" href="{% url 'about' %}" data-rect="37,55,86,98" data-stand="45" data-pose="pose-about.png" data-box="24,97,47,122" aria-label="About: the framed certificate"><span class="room-tag">ABOUT</span></a>
+      <a class="room-obj" href="{% url 'experience' %}" data-rect="55,108,133,168" data-stand="152" data-pose="pose-experience.png" data-box="116,95,86,122" aria-label="Experience: the pile of papers"><span class="room-tag">EXPERIENCE</span></a>
+      <a class="room-obj" href="{% url 'projects' %}" data-rect="152,90,290,155" data-stand="236" data-pose="pose-projects.png" data-box="171,98,97,119" aria-label="Projects: the PC setup"><span class="room-tag">PROJECTS</span></a>
+      <a class="room-obj" href="{% url 'skills' %}" data-rect="289,34,376,217" data-stand="291" data-pose="pose-skills.png" data-box="273,95,52,122" aria-label="Skills: the bookshelf"><span class="room-tag">SKILLS</span></a>
+      <a class="room-obj" href="{% url 'contact' %}" data-rect="377,146,416,217" data-stand="377" data-pose="pose-contact.png" data-box="354,97,59,122" aria-label="Contact: the phone"><span class="room-tag">CONTACT</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="paths" class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> Pick a chapter</span>
+      <h2 data-reveal="pixel">Choose your path</h2>
+    </div>
+    <div class="paths" data-stagger="90">
+      {% for p in paths %}
+      <a class="path-card px-frame" href="{% url p.key %}" data-tilt>
+        <canvas data-sprite="{{ p.sprite }}" data-scale="4"{% if p.sprite == 'hero' %} data-anim="idle"{% endif %}></canvas>
+        <span class="num">CH.{{ p.chapter }}</span>
+        <h3>{{ p.label }}</h3>
+        <p>{{ p.blurb }}</p>
+        <span class="go">ENTER →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="feature px-frame" data-reveal="rise">
+      <div>
+        <span class="eyebrow">Featured quest</span>
+        <h3>{{ featured.name }}</h3>
+        <p class="lead" style="font-size:1.7rem">{{ featured.summary }}</p>
+        <p class="muted">One player account across four games, a server-authoritative Django API, and a Kafka telemetry pipeline that turns play into analytics: the kind of backend a live game needs, built at indie scale.</p>
+        <div class="chips" style="margin:22px 0 30px">
+          {% for t in featured.stack %}<span class="chip">{{ t }}</span>{% endfor %}
+        </div>
+        <a class="btn btn--green" href="{% url 'projects' %}">Read the quest log <span class="arrow">→</span></a>
+      </div>
+      {% include "core/_luxmora_flow.html" %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'core/js/room.js' %}?v={{ ASSET_V }}"></script>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block title %}Lost{% endblock %}
+{% block content %}
+<section class="lost">
+  <div class="wrap">
+    <canvas data-sprite="bat" data-anim="idle" data-scale="8"></canvas>
+    <h1 style="font-size:clamp(1.4rem,5vw,3rem);margin:24px 0" data-glitch>404 · Wrong door</h1>
+    <p class="lead" style="margin:0 auto 32px">This room hasn't been built yet. Only bats live here.</p>
+    <a class="btn" href="{% url 'home' %}">Back to the Keep <span class="arrow">→</span></a>
+  </div>
+</section>
+{% endblock %}

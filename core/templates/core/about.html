@@ -1,0 +1,92 @@
+{% extends "core/base.html" %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <span class="chapter" data-reveal="left"><b>CH.01</b> · About</span>
+    <h1 data-split data-glitch>The player behind the systems</h1>
+    <p class="lead" data-reveal="up" data-delay="500">{{ bio.lead }}</p>
+  </div>
+  <div class="ghost" data-parallax="0.25" aria-hidden="true">ABOUT</div>
+</section>
+
+<section class="section" style="padding-top:20px">
+  <div class="wrap about-grid">
+    <div class="bio" data-stagger="140">
+      {% for p in bio.paragraphs %}<p>{{ p }}</p>{% endfor %}
+      <p class="closer">▶ {{ bio.closer }}</p>
+    </div>
+
+    <aside class="sheet px-frame" data-reveal="right" aria-label="Character sheet">
+      <div class="sheet-top">
+        <div class="sheet-portrait"><canvas data-sprite="hero" data-anim="idle" data-scale="4"></canvas></div>
+        <div>
+          <h3>{{ PROFILE.short|upper }}</h3>
+          <p>Character sheet</p>
+        </div>
+      </div>
+      <dl>
+        {% for k, v in sheet.rows %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}
+      </dl>
+      <div class="bars">
+        {% for a in sheet.attributes %}
+        <div>
+          <div class="bar-label"><span>{{ a.name }}</span>{% if a.note %}<em>{{ a.note }}</em>{% endif %}</div>
+          <div class="bar{% if forloop.last %} green{% elif forloop.counter|divisibleby:2 %} indigo{% endif %}" data-fill="{{ a.value }}" style="--delay:{{ forloop.counter0 }}00ms" role="img" aria-label="{{ a.name }}: {{ a.value }} out of 100"><i></i></div>
+        </div>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> Where I fit</span>
+      <h2 data-reveal="pixel">Three worlds, one toolkit</h2>
+      <p data-reveal="up">Studios, product teams and animation pipelines all need the same thing underneath: reliable services, clean data and infrastructure nobody has to think about.</p>
+    </div>
+    <div class="fits" data-stagger="120">
+      {% for f in fits %}
+      <article class="fit px-frame" data-tilt>
+        <canvas data-sprite="{{ f.sprite }}" data-scale="4"></canvas>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.body }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> Side quests</span>
+      <h2 data-reveal="pixel">Away from the keyboard</h2>
+    </div>
+    <div class="quests" data-stagger="120" data-reveal-children="left">
+      {% for q in side_quests %}
+      <div class="quest">
+        <span class="q-num">SIDE QUEST {{ forloop.counter }}</span>
+        <h3>{{ q.title }}</h3>
+        <p>{{ q.body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band px-frame" data-reveal="scale">
+      <h2>See what I've built, then let's talk.</h2>
+      <div class="btn-row">
+        <a class="btn btn--indigo" href="{% url 'projects' %}">Projects <span class="arrow">→</span></a>
+        <a class="btn" href="{% url 'contact' %}">Contact <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

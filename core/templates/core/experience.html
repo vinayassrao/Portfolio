@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+{% block title %}Experience{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <span class="chapter" data-reveal="left"><b>CH.03</b> · Experience</span>
+    <h1 data-split data-glitch>The journey so far</h1>
+    <p class="lead" data-reveal="up" data-delay="400">Four years of enterprise delivery at IBM: data platforms for Bell Canada, then cloud infrastructure and CI/CD for Pearson.</p>
+  </div>
+  <div class="ghost" data-parallax="0.25" aria-hidden="true">LOG</div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="guild px-frame" data-reveal="rise">
+      <div class="guild-logo" data-reveal="pixel">
+        <canvas data-sprite="ibm" data-scale="8" role="img" aria-label="IBM"></canvas>
+      </div>
+      <div class="guild-text">
+        <span class="eyebrow">Guild · Jul 2022 – present</span>
+        <p class="guild-lead">Four years and two enterprise engagements, from data platforms to cloud infrastructure.</p>
+        <ul class="guild-path" data-stagger="120" data-reveal-children="left">
+          <li><b>Bell Canada</b><span>Application Developer · data engineering</span></li>
+          <li><b>Pearson</b><span>SRE &amp; DevOps · Terraform, AWS, CI/CD</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline" data-timeline>
+      {% for j in jobs %}
+      <article class="job px-frame{% if j.current %} current px-frame--ruby{% endif %}" data-reveal="right">
+        <div class="job-head">
+          <div>
+            <h2>{{ j.role }}</h2>
+            <div class="who">{% if j.company == "IBM" %}<canvas class="who-logo" data-sprite="ibm" data-scale="2" role="img" aria-label="IBM"></canvas>{% else %}{{ j.company }}{% endif %} · Client: {{ j.client }}</div>
+          </div>
+          <span class="when">{{ j.dates }}</span>
+        </div>
+        <ul class="loot" data-stagger="80" data-reveal-children="up">
+          {% for pt in j.points %}<li>{{ pt }}</li>{% endfor %}
+        </ul>
+      </article>
+      {% endfor %}
+      <article class="job px-frame px-frame--green" data-reveal="right">
+        <div class="job-head">
+          <div>
+            <h2>{{ cp.title }}</h2>
+            <div class="who">{{ cp.where }}</div>
+          </div>
+          <span class="when">{{ cp.dates }}</span>
+        </div>
+        <p class="muted" style="margin:0">{{ cp.body }}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="chapter" data-reveal="left"><b>◆</b> Achievements unlocked</span>
+      <h2 data-reveal="pixel">Certifications</h2>
+    </div>
+    <div class="achievements" data-stagger="90" data-reveal-children="right">
+      {% for c in certs %}
+      <div class="achievement">
+        <div class="trophy" aria-hidden="true">★</div>
+        <div>
+          <small>Unlocked{% if c.date %} · {{ c.date }}{% endif %}</small>
+          <b>{{ c.name }}</b>
+          <span>{{ c.by }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap after-grid">
+    <div class="panel px-frame px-frame--ash" data-reveal="up">
+      <h3>Education</h3>
+      <ul class="edu">
+        {% for e in education %}
+        <li><div><b>{{ e.school }}</b><span>{{ e.what }}</span></div><time>{{ e.dates }}</time></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="cta-band px-frame" data-reveal="up" data-delay="120" style="align-content:center">
+      <h2>Next chapter: your team?</h2>
+      <a class="btn" href="{% url 'contact' %}">Get in touch <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

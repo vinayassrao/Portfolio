@@ -1,0 +1,24 @@
+<div class="flow" aria-label="Luxmora architecture: four Phaser games talk through a bridge contract to a Django REST API backed by PostgreSQL, with gameplay events streamed through Kafka and ksqlDB into dbt models.">
+  <div class="flow-row" data-stagger="120" data-reveal-children="scale">
+    <div class="flow-node">Game I</div><div class="flow-link"></div>
+    <div class="flow-node">Game II</div><div class="flow-link"></div>
+    <div class="flow-node">Game III</div><div class="flow-link"></div>
+    <div class="flow-node">Game IV</div>
+  </div>
+  <div class="flow-caption">Phaser · TypeScript</div>
+  <div class="flow-down"></div>
+  <div class="flow-row" data-reveal="scale"><div class="flow-node ruby">Bridge contract</div></div>
+  <div class="flow-down"></div>
+  <div class="flow-row" data-stagger="120" data-reveal-children="scale">
+    <div class="flow-node ruby">Django REST API</div><div class="flow-link"></div>
+    <div class="flow-node">PostgreSQL</div>
+  </div>
+  <div class="flow-caption">JWT · versioned saves · leaderboards</div>
+  <div class="flow-down"></div>
+  <div class="flow-row" data-stagger="120" data-reveal-children="scale">
+    <div class="flow-node green">Kafka</div><div class="flow-link"></div>
+    <div class="flow-node green">ksqlDB</div><div class="flow-link"></div>
+    <div class="flow-node green">dbt</div>
+  </div>
+  <div class="flow-caption">Telemetry · quality gates</div>
+</div>

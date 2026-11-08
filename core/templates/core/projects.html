@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <span class="chapter" data-reveal="left"><b>CH.02</b> · Projects</span>
+    <h1 data-split data-glitch>Quest log</h1>
+    <p class="lead" data-reveal="up" data-delay="400">Games on shared backends, streaming data platforms, NLP from scratch. Each one built end to end, documented and shipped.</p>
+  </div>
+  <div class="ghost" data-parallax="0.25" aria-hidden="true">QUESTS</div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    {% for p in projects %}
+    <article class="project" id="{{ p.slug }}">
+      <div class="project-side">
+        <div class="project-num" data-reveal="left">{{ forloop.counter|stringformat:"02d" }}</div>
+        <span class="badge{% if forloop.first %} featured{% endif %}" data-reveal="left" data-delay="120">{{ p.status }}</span>
+      </div>
+      <div>
+        <h2 data-reveal="pixel">{{ p.name }}</h2>
+        <div class="kind" data-reveal="up">{{ p.kind }}</div>
+        <p class="summary" data-reveal="up" data-delay="80">{{ p.summary }}</p>
+        {% if forloop.first %}
+        <div class="feature-flow px-frame" data-reveal="rise">{% include "core/_luxmora_flow.html" %}</div>
+        {% endif %}
+        <ul class="loot" data-stagger="90" data-reveal-children="left">
+          {% for pt in p.points %}<li>{{ pt }}</li>{% endfor %}
+        </ul>
+        <div class="chips" data-stagger="40" data-reveal-children="scale">
+          {% for t in p.stack %}<span class="chip">{{ t }}</span>{% endfor %}
+        </div>
+        {% if p.url %}<p style="margin-top:26px"><a class="btn btn--ghost" href="{{ p.url }}" target="_blank" rel="noopener">View repo <span class="arrow">→</span></a></p>{% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band px-frame" data-reveal="scale">
+      <h2>Want the backstory behind these?</h2>
+      <div class="btn-row">
+        <a class="btn btn--indigo" href="{% url 'experience' %}">Experience <span class="arrow">→</span></a>
+        <a class="btn" href="{% url 'contact' %}">Contact <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

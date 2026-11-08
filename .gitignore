@@ -1,0 +1,24 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+.env
+*.log
+
+# Editors / OS / tools
+.vscode/
+.idea/
+.claude/
+Thumbs.db
+.DS_Store
+
+# Large local-only material (kept on the author's machine, not in the repo)
+docs/*.png
+docs/ai-tests/
+!docs/screenshots/

@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <span class="chapter" data-reveal="left"><b>CH.05</b> · Contact</span>
+    <h1 data-split data-glitch>Save point reached</h1>
+    <p class="lead" data-reveal="up" data-delay="400">{{ PROFILE.availability }} Studios, teams and collaborators: I'd love to hear what you're building.</p>
+  </div>
+  <div class="ghost" data-parallax="0.25" aria-hidden="true">HELLO</div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap contact-grid">
+    <div class="mail-card px-frame" data-reveal="left">
+      <canvas data-sprite="letter" data-scale="6"></canvas>
+      <span class="eyebrow">Fastest route</span>
+      <div class="mail-addr">{{ PROFILE.email }}</div>
+      <div class="btn-row">
+        <a class="btn" href="mailto:{{ PROFILE.email }}">Write an email <span class="arrow">→</span></a>
+        <button type="button" class="btn btn--ghost" data-copy="{{ PROFILE.email }}">Copy</button>
+      </div>
+      <ul class="facts">
+        <li>Based in {{ PROFILE.location }}</li>
+        <li>Remote-first, open to relocating internationally</li>
+        <li>Game studios, tech teams, animation &amp; VFX pipelines</li>
+        {% for link in PROFILE.links %}<li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a></li>{% endfor %}
+      </ul>
+    </div>
+
+    <form class="form px-frame" method="post" action="{% url 'contact' %}#message" id="message" data-reveal="right" novalidate>
+      {% csrf_token %}
+      {% if messages %}{% for m in messages %}<div class="flash" role="status">✓ {{ m }}</div>{% endfor %}{% endif %}
+      <span class="eyebrow" style="margin:0">Or leave a message</span>
+      {% for field in form %}
+        {% if field.name == "website" %}
+          <div class="hp" aria-hidden="true">{{ field }}</div>
+        {% else %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for e in field.errors %}<div class="err">{{ e }}</div>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div><button class="btn btn--indigo" type="submit">Send message <span class="arrow">→</span></button></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
