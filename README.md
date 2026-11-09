@@ -32,6 +32,8 @@ JavaScript turned off.
 - The PC fans pulse, the monitors flicker and the eyes on the little TV under the desk blink.
 - A smaller version of him lives in the nav bar and dashes to the link you click.
 - `prefers-reduced-motion` turns the walking and dashing off; links open directly.
+- His behaviour is an explicit state machine (`idle`, `acting`, `strolling`, `walking`, `posing`, `leaving`), shown
+  as `data-state` on the room; the nav-bar runner has its own (`idle`, `dashing`, `covering`, `arrived`).
 
 ## Tech
 
@@ -41,7 +43,7 @@ JavaScript turned off.
   so it stays crisp on normal and high-DPI screens.
 - **Contact page:** an email card (mail link, copy button) with GitHub and LinkedIn as pixel-logo buttons, next to
   a contact form. Messages are saved (readable in the Django admin) and emailed to me through Gmail SMTP, with the
-  sender as Reply-To. A honeypot field drops bot submissions; a mail failure never loses a message. Covered by tests
+  sender as Reply-To. A honeypot field drops bot submissions; a mail failure never loses a message, and each message records whether its email was sent (filter by email status in the admin). Covered by tests
   (`manage.py test core`).
 - **Hosting:** PythonAnywhere (Python 3.13, SQLite, static files served by PythonAnywhere, HTTPS forced).
 

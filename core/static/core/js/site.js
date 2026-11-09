@@ -65,17 +65,28 @@
   // ------------------------------------------------------------ nav
   const nav = $(".site-nav");
   const burger = $(".nav-toggle");
-  // mobile menu toggle
-  if (burger) burger.addEventListener("click", () => {
-    const open = document.body.classList.toggle("nav-open");
-    burger.setAttribute("aria-expanded", String(open));
+  // Mobile menu: two states, closed | open. setMenu is the only place that changes it, so the body class (which
+  // shows the menu and locks scrolling) and the button's aria-expanded can never disagree.
+  /** Opens or closes the mobile menu. */
+  function setMenu(open) {
+    document.body.classList.toggle("nav-open", open);
+    if (burger) burger.setAttribute("aria-expanded", String(open));
+  }
+  const menuOpen = () => document.body.classList.contains("nav-open");
+  if (burger) burger.addEventListener("click", () => setMenu(!menuOpen()));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menuOpen()) { setMenu(false); if (burger) burger.focus(); }
   });
+  // back from the next page (back/forward cache): don't come back to an open menu with scrolling locked
+  window.addEventListener("pageshow", (e) => { if (e.persisted) setMenu(false); });
 
   // ------------------------------------------------------------ nav runner
   // A small him in the nav bar (Vinaya's casual design, js/casual-hero.js). Clicking a nav link: he dashes to it
-  // (~0.3s), taps it, and the
-  // page opens (the page transition starts as he arrives). Any click or key during the dash skips straight there.
-  // Desktop nav only; off for prefers-reduced-motion (the CSS hides him and nothing is intercepted).
+  // (~0.3s), taps it, and the page opens (the page transition starts as he arrives). Any click or key during the
+  // dash skips straight there. Desktop nav only; off for prefers-reduced-motion (the CSS hides him and nothing is
+  // intercepted).
+  // States: idle -> dashing -> covering (the page transition has started, he is still running) -> arrived.
+  // Skipping goes straight to arrived; Back (back/forward cache) returns to idle. Mirrored as data-state on him.
   (function navRunner() {
     const cv = $(".nav-runner"), HERO = window.CasualHero, links = $(".nav-links");
     if (!cv || !HERO || !links || reduced) return;
@@ -92,13 +103,18 @@
     img.src = cv.dataset.sheet;
     const IDLE = HERO.anims.idle, RUN = HERO.anims.walk, JUMP = HERO.anims.jump || IDLE;
     const FIDGET = [HERO.anims.headphones, HERO.anims.phone, HERO.anims.yawn].filter(Boolean);
-    let x = 0, face = 1, hop = 0, dash = null, ready = false;
+    const R = { IDLE: "idle", DASHING: "dashing", COVERING: "covering", ARRIVED: "arrived" };
+    let state = R.IDLE;
+    /** Sets his state (and data-state on the canvas). */
+    function set(next) { state = next; cv.dataset.state = next; }
+    set(R.IDLE);
+    let x = 0, face = 1, hop = 0, dash = null;
 
     // x of a link's centre inside the nav, and the link for the current page
     const linkX = (a) => { const r = a.getBoundingClientRect(), p = inner.getBoundingClientRect(); return r.left + r.width / 2 - p.left; };
     const current = () => $(".nav-links a[aria-current='page']") || $(".nav-links a");
     /** Parks him under the current page's link (when not dashing, desktop only). */
-    function settle() { if (!dash && wide.matches) { const a = current(); if (a) x = linkX(a); } }
+    function settle() { if (state === R.IDLE && wide.matches) { const a = current(); if (a) x = linkX(a); } }
     /** Draws one frame of his sheet, mirrored when he faces left. */
     function draw(frame) {
       ctx.clearRect(0, 0, cv.width, cv.height);
@@ -109,25 +125,29 @@
       ctx.drawImage(img, frame * FW, 0, FW, FH, 0, 0, cv.width, cv.height);
       ctx.restore();
     }
-    /** Ends a dash: snaps him to the link, marks it tapped and starts the page transition (once). */
+    /** Starts the page transition to the dash's link; dashing -> covering. */
+    function cover() {
+      set(R.COVERING);
+      PixelTransition.go(dash.url);
+    }
+    /** Ends a dash: snaps him to the link, marks it tapped and starts the page transition if it hasn't yet. */
     function finish() {
-      if (!dash) return;
-      const d = dash;
-      dash.done = true;
-      x = d.x1;
+      if (state !== R.DASHING && state !== R.COVERING) return;
+      if (state === R.DASHING) cover();
+      set(R.ARRIVED);
+      x = dash.x1;
       window.removeEventListener("keydown", finish, true);
       window.removeEventListener("pointerdown", finish, true);
-      d.a.classList.add("is-tapped");
-      if (!d.going) { d.going = true; PixelTransition.go(d.url); }
+      dash.a.classList.add("is-tapped");
     }
     /** Animation loop: the dash (eased run), a small landing hop, otherwise idle with an occasional fidget. */
     function tick(ts) {
       let frame;
-      if (dash && !dash.done) {
+      if (state === R.DASHING || state === R.COVERING) {
         const p = Math.min(1, (ts - dash.t) / dash.ms);
         x = dash.x0 + (dash.x1 - dash.x0) * (1 - Math.pow(1 - p, 2));
         frame = RUN[Math.floor((ts - dash.t) / 60) % RUN.length];
-        if (p >= 0.65 && !dash.going) { dash.going = true; PixelTransition.go(dash.url); }   // cover starts as he arrives
+        if (p >= 0.65 && state === R.DASHING) cover();   // the cover starts as he arrives
         if (p >= 1) { hop = 4; finish(); }
       } else if (hop > 0.5) {
         frame = JUMP[0];
@@ -145,25 +165,33 @@
     links.addEventListener("click", (e) => {
       const a = e.target.closest("a[href]");
       if (!a || !wide.matches || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      if (dash) { e.preventDefault(); finish(); return; }
+      if (state !== R.IDLE) { e.preventDefault(); finish(); return; }
       if (a.getAttribute("aria-current") === "page" || new URL(a.href, location.href).origin !== location.origin) return;
       e.preventDefault();
       const x1 = linkX(a);
       face = x1 >= x ? 1 : -1;
       dash = { x0: x, x1: x1, t: performance.now(), ms: Math.min(320, 120 + Math.abs(x1 - x) * 0.4), url: a.href, a: a };
-      setTimeout(() => {   // skip on the next click or key (not this one)
+      set(R.DASHING);
+      setTimeout(() => {   // skip on the next click or key (not this one), unless he already arrived
+        if (state === R.ARRIVED) return;
         window.addEventListener("keydown", finish, true);
         window.addEventListener("pointerdown", finish, true);
       }, 0);
     });
     window.addEventListener("resize", settle);
     window.addEventListener("pageshow", (e) => {
-      if (e.persisted) { if (dash) dash.a.classList.remove("is-tapped"); dash = null; settle(); }
+      if (!e.persisted) return;
+      window.removeEventListener("keydown", finish, true);
+      window.removeEventListener("pointerdown", finish, true);
+      if (dash) dash.a.classList.remove("is-tapped");
+      dash = null; hop = 0;
+      set(R.IDLE);
+      settle();
     });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
     window.addEventListener("load", settle);
     settle();
-    if (!ready) { ready = true; requestAnimationFrame(tick); }
+    requestAnimationFrame(tick);
   })();
 
   // ------------------------------------------------------------ scroll driven bits
@@ -393,14 +421,16 @@
 
   // ------------------------------------------------------------ copy email
   // [data-copy] buttons copy their value and flash "COPIED!"
+  // States: idle | copied (for 1.6s); a click while copied restarts the timer instead of stacking another one.
   $$("[data-copy]").forEach((btn) => {
+    const label = btn.textContent;
+    let timer = 0;
     btn.addEventListener("click", () => {
       const done = () => {
-        const old = btn.dataset.label || btn.textContent;
-        btn.dataset.label = old;
         btn.textContent = "COPIED!";
         btn.classList.add("is-done");
-        setTimeout(() => { btn.textContent = old; btn.classList.remove("is-done"); }, 1600);
+        clearTimeout(timer);
+        timer = setTimeout(() => { btn.textContent = label; btn.classList.remove("is-done"); }, 1600);
       };
       if (navigator.clipboard) navigator.clipboard.writeText(btn.dataset.copy).then(done, done);
       else done();

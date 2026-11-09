@@ -26,6 +26,7 @@ class ContactFormTests(TestCase):
         self.assertEqual(m.reply_to, ["ada@example.com"])
         self.assertIn("Ada", m.subject)
         self.assertIn(FORM["message"], m.body)
+        self.assertEqual(ContactMessage.objects.get().email_status, ContactMessage.EmailStatus.SENT)
 
     def test_spam_is_neither_saved_nor_emailed(self):
         """A filled honeypot means a bot: nothing is saved or sent."""
@@ -39,6 +40,7 @@ class ContactFormTests(TestCase):
                 self.assertLogs("core.views", level="ERROR"):
             r = self.client.post(reverse("contact"), FORM, follow=True)
         self.assertEqual(ContactMessage.objects.count(), 1)
+        self.assertEqual(ContactMessage.objects.get().email_status, ContactMessage.EmailStatus.FAILED)
         self.assertContains(r, "Message saved")
 
     @override_settings(CONTACT_NOTIFY_EMAIL="")
@@ -46,4 +48,14 @@ class ContactFormTests(TestCase):
         """An empty CONTACT_NOTIFY_EMAIL turns emails off; messages are still saved."""
         self.client.post(reverse("contact"), FORM)
         self.assertEqual(ContactMessage.objects.count(), 1)
+        self.assertEqual(ContactMessage.objects.get().email_status, ContactMessage.EmailStatus.OFF)
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_email_status_is_set_only_once(self):
+        """The email status can only leave "pending" once; a second notification attempt is refused."""
+        from .views import notify_by_email
+        msg = ContactMessage.objects.create(**FORM)
+        notify_by_email(msg)
+        with self.assertRaises(ValueError):
+            notify_by_email(msg)
+        self.assertEqual(len(mail.outbox), 1)

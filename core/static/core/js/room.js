@@ -64,7 +64,34 @@
   // true once an image has loaded
   const ok = (im) => im.complete && im.naturalWidth;
 
-  // ---- him
+  // ---- him: one explicit state machine
+  // idle -> acting (a little fidget) / strolling (arrow keys) / walking (to an object)
+  // walking -> posing (acts the object out) -> leaving (the page opens); walking -> leaving when there is no pose.
+  // leaving -> idle only when the page comes back from the browser's back/forward cache.
+  // The current state is mirrored on the room as data-state, for CSS, tests and tools.
+  const S = { IDLE: "idle", ACTING: "acting", STROLLING: "strolling", WALKING: "walking", POSING: "posing", LEAVING: "leaving" };
+  const NEXT = {
+    idle: [S.ACTING, S.STROLLING, S.WALKING],
+    acting: [S.IDLE, S.STROLLING, S.WALKING],
+    strolling: [S.IDLE, S.WALKING],
+    walking: [S.POSING, S.LEAVING],
+    posing: [S.LEAVING],
+    leaving: [S.IDLE],
+  };
+  let state = S.IDLE;
+  /** Moves to state `next` if NEXT allows it (or `force`); returns whether it did (a disallowed move is ignored). */
+  function to(next, force) {
+    if (next === state) return true;
+    if (!force && NEXT[state].indexOf(next) < 0) return false;
+    state = next;
+    stage.dataset.state = next;
+    stage.classList.toggle("is-posing", next === S.POSING || (next === S.LEAVING && !!trip && !!trip.pt));
+    return true;
+  }
+  stage.dataset.state = state;
+  // walking, posing or leaving: he is on his way to (or at) an object and the page is about to open
+  const onTrip = () => state === S.WALKING || state === S.POSING || state === S.LEAVING;
+
   let x = 196, face = 1, hop = 0, walking = 0, trip = null, near = null, focused = false;
   const keys = { left: false, right: false };
 
@@ -72,13 +99,18 @@
   function go(o) {
     if (window.PixelTransition) window.PixelTransition.go(o.a.href); else window.location.href = o.a.href;
   }
+  /** Stops listening for the "skip ahead" click/key. */
+  function unbindSkip() {
+    window.removeEventListener("keydown", leave, true);
+    window.removeEventListener("pointerdown", leave, true);
+  }
   // A trip: walk to the object -> act it out (his pose there) -> the page opens. Any click or key skips ahead.
   /** Ends the trip and opens the page (also bound to any click or key, to skip ahead). */
   function leave() {
-    if (!trip || trip.phase === "gone") return;
-    trip.phase = "gone"; x = trip.to;
-    window.removeEventListener("keydown", leave, true);
-    window.removeEventListener("pointerdown", leave, true);
+    if (state !== S.WALKING && state !== S.POSING) return;
+    to(S.LEAVING);
+    x = trip.to;
+    unbindSkip();
     trip.o.a.classList.add("is-tapped");
     go(trip.o);
   }
@@ -86,14 +118,18 @@
   function arrive(ts) {
     x = trip.to;
     trip.o.a.classList.add("is-tapped");
-    if (trip.o.pose && ok(trip.o.pose)) { trip.phase = "pose"; trip.pt = ts; stage.classList.add("is-posing"); } else { hop = 4; leave(); }
+    if (trip.o.pose && ok(trip.o.pose)) { trip.pt = ts; to(S.POSING); } else { hop = 4; leave(); }
   }
   /** Starts a trip to object o; the walk takes longer the further he is. */
   function walkTo(o) {
+    if (onTrip()) return;
     const dist = Math.abs(o.stand - x);
     face = o.stand >= x ? 1 : -1;
-    trip = { o: o, from: x, to: o.stand, t: performance.now(), ms: dist < 2 ? 0 : Math.min(720, 120 + dist * 3.6), phase: "walk" };
-    setTimeout(() => {
+    trip = { o: o, from: x, to: o.stand, t: performance.now(), ms: dist < 2 ? 0 : Math.min(720, 120 + dist * 3.6) };
+    act = null;
+    to(S.WALKING);
+    setTimeout(() => {   // skip on the next click or key (not this one), unless the trip already ended
+      if (state !== S.WALKING && state !== S.POSING) return;
       window.addEventListener("keydown", leave, true);
       window.addEventListener("pointerdown", leave, true);
     }, 0);
@@ -105,7 +141,7 @@
       if (reduced || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       e.stopPropagation();
-      if (trip) { leave(); return; }
+      if (onTrip()) { leave(); return; }
       walkTo(o);
     });
   });
@@ -115,7 +151,7 @@
   stage.addEventListener("blur", () => { focused = false; keys.left = keys.right = false; stage.classList.remove("is-active"); });
   stage.addEventListener("pointerdown", (e) => { if (e.target === stage || e.target === cv) stage.focus(); });
   stage.addEventListener("keydown", (e) => {
-    if (e.target !== stage || trip) return;
+    if (e.target !== stage || onTrip()) return;
     const k2 = e.key;
     if (k2 === "ArrowLeft" || k2 === "a" || k2 === "A") { keys.left = true; e.preventDefault(); }
     else if (k2 === "ArrowRight" || k2 === "d" || k2 === "D") { keys.right = true; e.preventDefault(); }
@@ -132,7 +168,10 @@
   // coming back with the browser's Back button: reset the room
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
-    trip = null; stage.classList.remove("is-posing");
+    unbindSkip();
+    keys.left = keys.right = false;   // a key released while away never sent its keyup
+    trip = null; act = null; hop = 0;
+    to(S.IDLE, true);
     objs.forEach((o) => o.a.classList.remove("is-tapped"));
   });
 
@@ -141,30 +180,35 @@
   /** Frame loop: moves him (trip, keyboard or idle acts), then draws the glow layers, the TV blink and him or his pose. */
   function tick(ts) {
     const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
-    let frame;
-    if (trip && trip.phase === "walk") {
+    const steering = !reduced && keys.left !== keys.right;
+    let frame = IDLE[0];
+    if (!onTrip()) to(steering ? S.STROLLING : (state === S.STROLLING ? S.IDLE : state));
+    if (onTrip() || state === S.STROLLING) { act = null; nextAct = ts + 4000; }
+
+    if (state === S.WALKING) {
       const p = trip.ms ? Math.min(1, (ts - trip.t) / trip.ms) : 1;
       x = trip.from + (trip.to - trip.from) * (1 - Math.pow(1 - p, 2));
       frame = RUN[Math.floor((ts - trip.t) / 110) % RUN.length];
       if (p >= 1) arrive(ts);
-    } else if (trip && trip.phase === "pose") {
-      frame = IDLE[0];
+    } else if (state === S.POSING) {
       if (ts - trip.pt > POSE_MS) leave();
-    } else if (!trip && !reduced && (keys.left !== keys.right)) {
+    } else if (state === S.STROLLING) {
       face = keys.right ? 1 : -1;
       x = Math.max(14, Math.min(NW - 14, x + face * 96 * dt));
       walking += dt;
       frame = RUN[Math.floor(walking / 0.12) % RUN.length];
-    } else {
+    } else if (state !== S.LEAVING) {
       walking = 0;
-      if (!act && !reduced && ts > nextAct && !trip) act = { f: A[ACTS[Math.floor(Math.random() * ACTS.length)]], t: ts };
-      if (act) {
+      if (state === S.IDLE && !reduced && ts > nextAct && ACTS.length) {
+        act = { f: A[ACTS[Math.floor(Math.random() * ACTS.length)]], t: ts };
+        to(S.ACTING);
+      }
+      if (state === S.ACTING) {
         const i = Math.floor((ts - act.t) / 420);
-        if (i >= act.f.length) { act = null; nextAct = ts + 3500 + Math.random() * 4000; frame = IDLE[0]; }
+        if (i >= act.f.length) { act = null; nextAct = ts + 3500 + Math.random() * 4000; to(S.IDLE); }
         else frame = act.f[i];
-      } else frame = IDLE[0];
+      }
     }
-    if (trip || keys.left !== keys.right) { act = null; nextAct = ts + 4000; }
     if (hop > 0.5 && A.jump) frame = A.jump[0];
     hop = Math.max(0, hop - 30 * dt);
 
@@ -183,7 +227,7 @@
     const blink = (t % 4.6) < 0.14 || ((t + 0.3) % 9.1) < 0.12;   // the eyes on the old TV blink now and then
     if (blink && ok(L.shut)) ctx.drawImage(L.shut, 0, 0, cv.width, cv.height);
 
-    const posing = trip && trip.phase !== "walk" && trip.o.pose && ok(trip.o.pose) && trip.pt;
+    const posing = (state === S.POSING || state === S.LEAVING) && trip && trip.o.pose && ok(trip.o.pose) && trip.pt;
     if (posing) {
       const b = trip.o.box;
       ctx.drawImage(trip.o.pose, b[0] * k, b[1] * k, b[2] * k, b[3] * k);

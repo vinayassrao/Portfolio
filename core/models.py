@@ -11,6 +11,16 @@ class ContactMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
+    class EmailStatus(models.TextChoices):
+        """What happened to the email copy: pending -> sent | failed | off. Set once, by views.notify_by_email."""
+
+        PENDING = "pending", "Pending"
+        SENT = "sent", "Emailed"
+        FAILED = "failed", "Email failed (reply from here)"
+        OFF = "off", "Not emailed (notifications off)"
+
+    email_status = models.CharField(max_length=8, choices=EmailStatus, default=EmailStatus.PENDING, editable=False)
+
     class Meta:
         """Newest first."""
 

@@ -9,6 +9,7 @@ from django.urls import reverse
 
 from . import content
 from .forms import ContactForm
+from .models import ContactMessage
 
 log = logging.getLogger(__name__)
 
@@ -21,10 +22,15 @@ def _ctx(active, **extra):
 def notify_by_email(msg):
     """Email a saved contact message to the site owner; Reply-To is the sender, so replying answers them.
 
-    A mail failure never loses the message (it is already saved) and never breaks the form.
+    A mail failure never loses the message (it is already saved) and never breaks the form; the outcome is
+    recorded on the message (email_status), so the admin shows which messages never reached the inbox.
     """
+    status = ContactMessage.EmailStatus
+    if msg.email_status != status.PENDING:   # each message is emailed at most once
+        raise ValueError(f"message {msg.pk} was already handled (email_status={msg.email_status!r})")
     to = settings.CONTACT_NOTIFY_EMAIL
     if not to:
+        _set_email_status(msg, status.OFF)
         return
     body = (f"{msg.message}\n\n-- \n{msg.name} <{msg.email}>\n"
             "Sent from the contact form on your portfolio.")
@@ -32,6 +38,15 @@ def notify_by_email(msg):
         EmailMessage(subject=f"Portfolio message from {msg.name}", body=body, to=[to], reply_to=[msg.email]).send()
     except Exception:
         log.exception("Could not email contact message %s", msg.pk)
+        _set_email_status(msg, status.FAILED)
+    else:
+        _set_email_status(msg, status.SENT)
+
+
+def _set_email_status(msg, new):
+    """Record the email outcome (pending -> sent | failed | off), saving just that field."""
+    msg.email_status = new
+    msg.save(update_fields=["email_status"])
 
 
 def home(request):
