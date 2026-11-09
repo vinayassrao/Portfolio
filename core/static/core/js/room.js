@@ -16,6 +16,7 @@
   const img = stage.querySelector(".room-img");
   const cv = stage.querySelector(".room-fx");
   const ctx = cv.getContext("2d");
+  // each .room-obj link: placed over its object from data-rect (art px), with where he stands and his pose there
   const objs = Array.from(stage.querySelectorAll(".room-obj")).map((a) => {
     const r = a.dataset.rect.split(",").map(Number);
     a.style.left = (r[0] / NW * 100) + "%"; a.style.top = (r[1] / NH * 100) + "%";
@@ -28,6 +29,7 @@
 
   // ---- crisp size: a whole number of device pixels per art pixel
   let k = 1;
+  /** Sizes the room to the container at a whole number of device pixels per art pixel. */
   function fit() {
     const dpr = window.devicePixelRatio || 1;
     const avail = stage.parentElement.clientWidth;
@@ -45,6 +47,7 @@
   window.addEventListener("resize", fit);
 
   // ---- art
+  // starts loading an image and returns it
   const load = (src) => { const im = new Image(); im.src = src; return im; };
   const base = stage.dataset.room;
   const L = {
@@ -58,16 +61,19 @@
   // little things he does while standing around
   const ACTS = ["phone", "headphones", "relax", "yawn", "phone", "headphones"].filter((n) => A[n]);
   let act = null, nextAct = performance.now() + 3500;
+  // true once an image has loaded
   const ok = (im) => im.complete && im.naturalWidth;
 
   // ---- him
   let x = 196, face = 1, hop = 0, walking = 0, trip = null, near = null, focused = false;
   const keys = { left: false, right: false };
 
+  /** Opens an object's page, with the pixel transition when site.js is loaded. */
   function go(o) {
     if (window.PixelTransition) window.PixelTransition.go(o.a.href); else window.location.href = o.a.href;
   }
   // A trip: walk to the object -> act it out (his pose there) -> the page opens. Any click or key skips ahead.
+  /** Ends the trip and opens the page (also bound to any click or key, to skip ahead). */
   function leave() {
     if (!trip || trip.phase === "gone") return;
     trip.phase = "gone"; x = trip.to;
@@ -76,11 +82,13 @@
     trip.o.a.classList.add("is-tapped");
     go(trip.o);
   }
+  /** He reached the object: hold its pose, or (no pose art) hop and open the page. */
   function arrive(ts) {
     x = trip.to;
     trip.o.a.classList.add("is-tapped");
     if (trip.o.pose && ok(trip.o.pose)) { trip.phase = "pose"; trip.pt = ts; stage.classList.add("is-posing"); } else { hop = 4; leave(); }
   }
+  /** Starts a trip to object o; the walk takes longer the further he is. */
   function walkTo(o) {
     const dist = Math.abs(o.stand - x);
     face = o.stand >= x ? 1 : -1;
@@ -91,6 +99,7 @@
     }, 0);
   }
 
+  // a click on an object sends him there instead of opening the link at once (a second click skips ahead)
   objs.forEach((o) => {
     o.a.addEventListener("click", (e) => {
       if (reduced || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -120,6 +129,7 @@
     if (k2 === "ArrowLeft" || k2 === "a" || k2 === "A") keys.left = false;
     if (k2 === "ArrowRight" || k2 === "d" || k2 === "D") keys.right = false;
   });
+  // coming back with the browser's Back button: reset the room
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
     trip = null; stage.classList.remove("is-posing");
@@ -128,6 +138,7 @@
 
   // ---- frame loop
   let last = performance.now();
+  /** Frame loop: moves him (trip, keyboard or idle acts), then draws the glow layers, the TV blink and him or his pose. */
   function tick(ts) {
     const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
     let frame;

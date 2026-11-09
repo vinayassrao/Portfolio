@@ -1,3 +1,4 @@
+"""URLs of the site's pages."""
 from django.urls import path
 
 from . import views

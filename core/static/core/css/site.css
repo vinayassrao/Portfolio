@@ -114,8 +114,6 @@ p { margin: 0 0 .8em; }
 @keyframes blink-steps { 50% { opacity: .35; } }
 
 .accent-ruby { color: var(--ruby-bright); }
-.accent-indigo { color: var(--indigo-200); }
-.accent-green { color: var(--military-light); }
 
 /* ---------------------------------------------------------------- pixel frames & buttons */
 .px-frame {
@@ -350,25 +348,11 @@ p { margin: 0 0 .8em; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .hero-figure { position: relative; display: grid; justify-items: center; }
-/* him (78x174 art px idle frames): sized in site.js at 2 css px per art px (4/3 on small screens) */
-.hero-figure canvas { width: 156px; height: 348px; image-rendering: pixelated; filter: drop-shadow(0 0 22px rgba(106, 82, 217, .55)); }
-/* (unused) label under the orbiting swords, removed from the page */
-.sword-label {
-  --sword: #dfe3dd;
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); white-space: nowrap;
-  font-family: var(--font-pixel); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--sword); transition: color .6s; text-shadow: 0 0 12px var(--sword);
-}
-.el-fire { color: #ff8a3d; } .el-water { color: #6fd3ff; } .el-air { color: #c8f0e4; } .el-earth { color: #a8c05a; }
-canvas[data-sprite="hero"] { width: auto; }
-/* the 62x59 hero frame, cropped to icon size so the card text lines up with the other cards */
-.path-card canvas[data-sprite="hero"], .fit canvas[data-sprite="hero"] { width: 72px; margin: -12px 0 -14px -20px; }
-.sheet-portrait { overflow: hidden; }
-/* hero frames are 62x59, body centred, feet on the bottom row; he stands ~47px tall (rows ~11-58).
-   Sized so he fills the portrait, nudged up so his feet clear its bottom edge. */
-.sheet-portrait canvas[data-sprite="hero"] { width: 104px; max-width: none; position: relative; top: -4px; }
-.bag-head canvas[data-sprite="hero"] { width: 64px; margin: -14px -8px -2px -10px; }
-@keyframes float { 50% { transform: translateY(-14px); } }
+/* him (76x168 art px idle frames): sized in site.js at 2 css px per art px (4/3 on small screens) */
+.hero-figure canvas { width: 152px; height: 336px; image-rendering: pixelated; filter: drop-shadow(0 0 22px rgba(106, 82, 217, .55)); }
+/* his pixel portrait (48x48 art px): 1x in cards and skill groups, 2x in the about page's character sheet */
+.sprite-hero { width: 48px; height: 48px; image-rendering: pixelated; display: block; flex: none; }
+.sheet-portrait .sprite-hero { width: 96px; height: 96px; }
 .orbit { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 .orbit-item {
   position: absolute; display: grid; place-items: center;
@@ -376,13 +360,13 @@ canvas[data-sprite="hero"] { width: auto; }
 }
 .orbit-item canvas, .orbit-item .orbit-icon {
   width: 56px; height: auto; filter: drop-shadow(0 0 8px var(--c)) drop-shadow(0 0 2px var(--c));
-  animation: sword-bob 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * -0.5s);
+  animation: icon-bob 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * -0.5s);
 }
 @keyframes orbit {
   from { transform: rotate(0deg) translateX(var(--r)) rotate(0deg); }
   to { transform: rotate(360deg) translateX(var(--r)) rotate(-360deg); }
 }
-@keyframes sword-bob { 50% { transform: rotate(-8deg) scale(1.06); } }   /* stays on the ring line */
+@keyframes icon-bob { 50% { transform: rotate(-8deg) scale(1.06); } }   /* stays on the ring line */
 .scroll-cue {
   position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
   font-family: var(--font-ui); font-size: .95rem; letter-spacing: .2em; color: var(--ash-300);
@@ -395,7 +379,7 @@ canvas[data-sprite="hero"] { width: auto; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-stage { --r: 158px; order: -1; }
   .orbit-item canvas, .orbit-item .orbit-icon { width: 42px; }
-  .hero-figure canvas { width: 104px; height: 232px; }
+  .hero-figure canvas { width: 101px; height: 224px; }
 }
 
 /* ---------------------------------------------------------------- stats */
@@ -449,8 +433,6 @@ canvas[data-sprite="hero"] { width: auto; }
 .room.is-posing .room-tag { opacity: 0 !important; }   /* he's acting it out: the label would cover him */
 @media (max-width: 700px) { .room-tag { font-size: .45rem; padding: 5px 6px 4px; } }
 
-.link-btn { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-ui); font-size: 1rem; color: var(--ash-400); text-decoration: underline; text-underline-offset: 4px; letter-spacing: .06em; text-transform: uppercase; }
-.link-btn:hover { color: var(--ruby-glow); }
 
 /* ---------------------------------------------------------------- path cards */
 .paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(176px, 1fr)); gap: 26px; }
@@ -467,8 +449,8 @@ canvas[data-sprite="hero"] { width: auto; }
 }
 .path-card:hover { --frame: var(--ruby-bright); background: var(--ash-850); }
 .path-card:hover::before { opacity: 1; }
-.path-card canvas { width: 48px; height: auto; transition: transform .4s var(--ease-spring); }
-.path-card:hover canvas { transform: translateY(-8px) scale(1.12); animation: hop .5s steps(3) .1s; }
+.path-card canvas, .path-card .sprite-hero { transition: transform .4s var(--ease-spring); }
+.path-card:hover canvas, .path-card:hover .sprite-hero { transform: translateY(-8px) scale(1.12); animation: hop .5s steps(3) .1s; }
 @keyframes hop { 50% { transform: translateY(-14px) scale(1.12); } }
 .path-card .num { font-family: var(--font-ui); color: var(--ash-400); letter-spacing: .14em; font-size: .95rem; }
 .path-card h3 { font-size: .95rem; }
@@ -527,7 +509,6 @@ canvas[data-sprite="hero"] { width: auto; }
 .sheet { padding: 28px; position: sticky; top: calc(var(--nav-h) + 20px); --frame: var(--indigo-500); }
 .sheet-top { display: flex; gap: 20px; align-items: center; margin-bottom: 22px; padding-bottom: 20px; border-bottom: 4px dashed var(--ash-700); }
 .sheet-portrait { width: 96px; height: 96px; display: grid; place-items: center; background: var(--indigo-900); box-shadow: 0 0 0 4px var(--indigo-700); flex: none; }
-.sheet-portrait canvas { width: 64px; }
 .sheet-top h3 { font-size: .85rem; margin-bottom: 8px; }
 .sheet-top p { margin: 0; color: var(--military-light); font-family: var(--font-ui); text-transform: uppercase; font-size: 1rem; letter-spacing: .08em; }
 .sheet dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0 0 22px; font-size: 1.35rem; }
@@ -548,7 +529,7 @@ canvas[data-sprite="hero"] { width: auto; }
 .fits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
 @media (max-width: 900px) { .fits { grid-template-columns: 1fr; } }
 .fit { padding: 30px 26px; transform: perspective(800px) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)); transition: transform .25s var(--ease-out); }
-.fit canvas { width: 44px; margin-bottom: 18px; }
+.fit canvas, .fit .sprite-hero { margin-bottom: 18px; }
 .fit h3 { margin-bottom: 14px; }
 .fit p { color: var(--ash-300); margin: 0; font-size: 1.4rem; }
 .fit:nth-child(1) { --frame: var(--ruby); }
@@ -657,7 +638,7 @@ canvas[data-sprite="hero"] { width: auto; }
 .bag:nth-child(3n+2) { --frame: var(--ruby); }
 .bag:nth-child(3n) { --frame: var(--military); }
 .bag-head { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-.bag-head canvas { width: 32px; }
+
 .bag-head h3 { font-size: .8rem; }
 .bag-head span { margin-left: auto; font-family: var(--font-ui); color: var(--ash-400); }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
@@ -726,4 +707,6 @@ canvas[data-sprite="hero"] { width: auto; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   .js [data-reveal] { opacity: 1; transform: none; filter: none; clip-path: none; }
+  /* the hobby icons stay still, spread evenly around the ring (5 icons, 72deg apart) */
+  .orbit-item { animation: none !important; transform: rotate(calc(var(--i) * 72deg - 90deg)) translateX(var(--r)) rotate(calc(90deg - var(--i) * 72deg)); }
 }

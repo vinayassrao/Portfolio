@@ -1,0 +1,4 @@
+{% load static %}{% comment %}
+  A pixel icon. "hero" is his portrait (img/hero/hero-bust.png, 48x48 art px; its size is set in site.css);
+  every other name is a sprites.js icon painted onto a canvas by site.js. Pass sprite and scale (css px per art px, used by canvases).
+{% endcomment %}{% if sprite == "hero" %}<img class="sprite-hero" src="{% static 'core/img/hero/hero-bust.png' %}?v={{ ASSET_V }}" alt="" width="48" height="48">{% else %}<canvas data-sprite="{{ sprite }}" data-scale="{{ scale|default:4 }}"></canvas>{% endif %}

@@ -1,3 +1,4 @@
+"""Page views. Each page renders its template with copy from content.py."""
 import logging
 
 from django.conf import settings
@@ -9,17 +10,19 @@ from django.urls import reverse
 from . import content
 from .forms import ContactForm
 
-
 log = logging.getLogger(__name__)
 
 
 def _ctx(active, **extra):
+    """Build a template context; `active` is the nav key of the current page."""
     return {"active": active, **extra}
 
 
 def notify_by_email(msg):
     """Email a saved contact message to the site owner; Reply-To is the sender, so replying answers them.
-    A mail failure never loses the message (it is already saved) and never breaks the form."""
+
+    A mail failure never loses the message (it is already saved) and never breaks the form.
+    """
     to = settings.CONTACT_NOTIFY_EMAIL
     if not to:
         return
@@ -32,6 +35,7 @@ def notify_by_email(msg):
 
 
 def home(request):
+    """Home: the hero, stats, the room navigation and the featured project."""
     return render(request, "core/home.html", _ctx(
         "home",
         stats=content.STATS,
@@ -44,6 +48,7 @@ def home(request):
 
 
 def about(request):
+    """About: bio, character sheet, where I fit and side quests."""
     return render(request, "core/about.html", _ctx(
         "about",
         bio=content.BIO,
@@ -54,10 +59,12 @@ def about(request):
 
 
 def projects(request):
+    """Projects."""
     return render(request, "core/projects.html", _ctx("projects", projects=content.PROJECTS))
 
 
 def experience(request):
+    """Experience: jobs, competitive programming, education and certifications."""
     return render(request, "core/experience.html", _ctx(
         "experience",
         jobs=content.EXPERIENCE,
@@ -68,12 +75,14 @@ def experience(request):
 
 
 def skills(request):
+    """Skills: grouped skills and what I'm learning next."""
     return render(request, "core/skills.html", _ctx(
         "skills", groups=content.SKILLS, unlocks=content.NEXT_UNLOCKS,
     ))
 
 
 def contact(request):
+    """Contact: show the form; on a valid POST save and email it, then redirect back (post/redirect/get)."""
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():

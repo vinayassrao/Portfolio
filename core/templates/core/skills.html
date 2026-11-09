@@ -17,7 +17,7 @@
       {% for g in groups %}
       <div class="bag px-frame" data-reveal="rise" data-delay="{% cycle '0' '140' %}">
         <div class="bag-head">
-          <canvas data-sprite="{{ g.sprite }}" data-scale="3"></canvas>
+          {% include "core/_sprite.html" with sprite=g.sprite scale=3 %}
           <h3>{{ g.name }}</h3>
           <span>{{ g.items|length }} items</span>
         </div>

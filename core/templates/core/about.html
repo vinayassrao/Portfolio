@@ -20,7 +20,7 @@
 
     <aside class="sheet px-frame" data-reveal="right" aria-label="Character sheet">
       <div class="sheet-top">
-        <div class="sheet-portrait"><canvas data-sprite="hero" data-anim="idle" data-scale="4"></canvas></div>
+        <div class="sheet-portrait">{% include "core/_sprite.html" with sprite="hero" scale=2 %}</div>
         <div>
           <h3>{{ PROFILE.short|upper }}</h3>
           <p>Character sheet</p>
@@ -51,7 +51,7 @@
     <div class="fits" data-stagger="120">
       {% for f in fits %}
       <article class="fit px-frame" data-tilt>
-        <canvas data-sprite="{{ f.sprite }}" data-scale="4"></canvas>
+        {% include "core/_sprite.html" with sprite=f.sprite scale=4 %}
         <h3>{{ f.title }}</h3>
         <p>{{ f.body }}</p>
       </article>

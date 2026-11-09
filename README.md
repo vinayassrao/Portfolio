@@ -57,6 +57,14 @@ python -m venv .venv
 Open http://127.0.0.1:8000. To read contact-form messages, create an admin user
 (`manage.py createsuperuser`) and visit `/admin/`.
 
+Tests and lint (rules in `ruff.toml`):
+
+```powershell
+.\.venv\Scripts\python manage.py test core
+.\.venv\Scripts\python -m pip install ruff
+.\.venv\Scripts\python -m ruff check .
+```
+
 ## Project layout
 
 | Path | What |

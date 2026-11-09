@@ -5,6 +5,7 @@ import sys
 
 
 def main():
+    """Run a Django management command with this project's settings."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portfolio.settings")
     from django.core.management import execute_from_command_line
 

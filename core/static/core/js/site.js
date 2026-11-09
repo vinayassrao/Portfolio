@@ -1,13 +1,17 @@
-/* Site-wide motion: page transitions, scroll reveals, parallax, embers, counters. */
+/* Site-wide behaviour: page transitions, the nav-bar runner, scroll reveals, parallax, counters, the home-page
+ * character loop, pixel sprite canvases, tilt cards, copy-to-clipboard and the ember field.
+ * Everything respects prefers-reduced-motion. */
 (function () {
   "use strict";
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // tiny query helpers: first match / all matches (as an array), optionally inside el
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
   document.documentElement.classList.add("js");
 
   // ------------------------------------------------------------ pixel transition
+  // A grid of coloured cells covers the page before navigating and uncovers the next page on arrival.
   const PixelTransition = (function () {
     const COLS = 16, ROWS = 9;
     const el = document.createElement("div");
@@ -35,6 +39,7 @@
     }
     window.addEventListener("pageshow", (e) => { if (e.persisted) el.classList.remove("is-covered"); });
 
+    /** Covers the screen with the pixel wipe, then opens url (immediately with reduced motion). */
     function go(url) {
       if (reduced) { window.location.href = url; return; }
       try { sessionStorage.setItem("px-nav", "1"); } catch (e) { /* ignore */ }
@@ -45,6 +50,7 @@
   })();
   window.PixelTransition = PixelTransition;
 
+  // Same-site link clicks play the transition; new tabs, downloads, modified clicks, admin and in-page anchors do not.
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[href]");
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -59,6 +65,7 @@
   // ------------------------------------------------------------ nav
   const nav = $(".site-nav");
   const burger = $(".nav-toggle");
+  // mobile menu toggle
   if (burger) burger.addEventListener("click", () => {
     const open = document.body.classList.toggle("nav-open");
     burger.setAttribute("aria-expanded", String(open));
@@ -66,8 +73,9 @@
 
   // ------------------------------------------------------------ nav runner
   // A small him in the nav bar (Vinaya's casual design, js/casual-hero.js). Clicking a nav link: he dashes to it
-  // (~0.3s), taps it, and the page opens (the page transition starts as he arrives). Any click or key during the dash skips straight there. Desktop nav only;
-  // off for prefers-reduced-motion (the CSS hides him and nothing is intercepted).
+  // (~0.3s), taps it, and the
+  // page opens (the page transition starts as he arrives). Any click or key during the dash skips straight there.
+  // Desktop nav only; off for prefers-reduced-motion (the CSS hides him and nothing is intercepted).
   (function navRunner() {
     const cv = $(".nav-runner"), HERO = window.CasualHero, links = $(".nav-links");
     if (!cv || !HERO || !links || reduced) return;
@@ -86,9 +94,12 @@
     const FIDGET = [HERO.anims.headphones, HERO.anims.phone, HERO.anims.yawn].filter(Boolean);
     let x = 0, face = 1, hop = 0, dash = null, ready = false;
 
+    // x of a link's centre inside the nav, and the link for the current page
     const linkX = (a) => { const r = a.getBoundingClientRect(), p = inner.getBoundingClientRect(); return r.left + r.width / 2 - p.left; };
     const current = () => $(".nav-links a[aria-current='page']") || $(".nav-links a");
+    /** Parks him under the current page's link (when not dashing, desktop only). */
     function settle() { if (!dash && wide.matches) { const a = current(); if (a) x = linkX(a); } }
+    /** Draws one frame of his sheet, mirrored when he faces left. */
     function draw(frame) {
       ctx.clearRect(0, 0, cv.width, cv.height);
       if (!img.complete || !img.naturalWidth) return;
@@ -98,6 +109,7 @@
       ctx.drawImage(img, frame * FW, 0, FW, FH, 0, 0, cv.width, cv.height);
       ctx.restore();
     }
+    /** Ends a dash: snaps him to the link, marks it tapped and starts the page transition (once). */
     function finish() {
       if (!dash) return;
       const d = dash;
@@ -108,6 +120,7 @@
       d.a.classList.add("is-tapped");
       if (!d.going) { d.going = true; PixelTransition.go(d.url); }
     }
+    /** Animation loop: the dash (eased run), a small landing hop, otherwise idle with an occasional fidget. */
     function tick(ts) {
       let frame;
       if (dash && !dash.done) {
@@ -128,6 +141,7 @@
       draw(frame);
       requestAnimationFrame(tick);
     }
+    // a nav click starts a dash to that link (a second click while dashing skips to the page)
     links.addEventListener("click", (e) => {
       const a = e.target.closest("a[href]");
       if (!a || !wide.matches || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -158,6 +172,7 @@
   const timelines = $$("[data-timeline]");
   let lastY = window.scrollY, ticking = false, velocity = 0;
 
+  /** Per-frame scroll work: progress bar, nav hide/show, parallax offsets and timeline fill. */
   function onScroll() {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
@@ -188,6 +203,7 @@
   onScroll();
 
   // ------------------------------------------------------------ reveal on scroll
+  // children of [data-stagger] reveal one after another; [data-delay] sets a single element's delay
   $$("[data-stagger]").forEach((group) => {
     const step = parseInt(group.dataset.stagger, 10) || 90;
     Array.from(group.children).forEach((child, i) => {
@@ -197,6 +213,7 @@
   });
   $$("[data-delay]").forEach((el) => el.style.setProperty("--delay", el.dataset.delay + "ms"));
 
+  /** Counts a [data-count] number up from 0 (ease-out), or shows it at once with reduced motion. */
   function animateCounter(el) {
     const target = parseFloat(el.dataset.count);
     const suffix = el.dataset.suffix || "";
@@ -211,6 +228,7 @@
   }
 
   // Fully clipped elements (pixel wipes) never "intersect", so they are revealed via their parent.
+  // When an element scrolls into view it gets .is-visible, and its counters and bars start.
   const proxies = new Map();
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
@@ -243,6 +261,7 @@
   });
 
   // ------------------------------------------------------------ split text (letter drop)
+  // [data-split] headings are split into letters (for the letter drop); screen readers get the plain text via aria-label
   $$("[data-split]").forEach((el) => {
     const text = el.textContent;
     el.setAttribute("aria-label", text);
@@ -272,6 +291,7 @@
   });
 
   // ------------------------------------------------------------ typewriter
+  // [data-typer]: types and deletes each word of a JSON list in turn
   $$("[data-typer]").forEach((el) => {
     const words = JSON.parse(el.dataset.typer);
     if (reduced) { el.textContent = words[0]; return; }
@@ -288,6 +308,7 @@
   });
 
   // ------------------------------------------------------------ pixel sprite canvases
+  /** Draws every canvas[data-sprite] from js/sprites.js at its data-scale; data-anim loops an animation. */
   function paintSprites() {
     if (!window.PixelSprites) return;
     $$("canvas[data-sprite]").forEach((cv) => {
@@ -298,9 +319,7 @@
       const ctx = cv.getContext("2d");
       const animName = cv.dataset.anim;
       const anim = animName && sp.anims[animName];
-      const sw = cv.dataset.palette && window.PixelSprites.SWORDS[cv.dataset.palette];
-      const pal = sw ? sw.pal : null;
-      const draw = (f) => { ctx.clearRect(0, 0, cv.width, cv.height); window.PixelSprites.drawFrame(ctx, sp, f, 0, 0, scale, pal); };
+      const draw = (f) => { ctx.clearRect(0, 0, cv.width, cv.height); window.PixelSprites.drawFrame(ctx, sp, f, 0, 0, scale); };
       if (!anim || reduced) { draw(parseInt(cv.dataset.frame, 10) || 0); return; }
       let i = 0;
       draw(anim.frames[0]);
@@ -318,6 +337,7 @@
     const sheet = new Image();
     sheet.src = idleCv.dataset.sheet;
     let shown = -1;
+    // sizes the canvas to a whole number of device pixels per art pixel, so the art stays crisp
     const fit = () => {
       const dpr = window.devicePixelRatio || 1;
       const css = window.matchMedia("(max-width: 860px)").matches ? 4 / 3 : 2;   // css px per art pixel
@@ -332,6 +352,7 @@
       [[0], 2600], [[1, 2, 2, 2, 1], 520], [[0], 1800], [[3], 2200], [[0], 900],
       [[4, 4, 4], 480], [[0], 2200], [[6, 7, 7, 6], 520], [[0], 1600],
     ];
+    // draws frame f of the idle sheet (skipped when it is already on screen)
     const draw = (f) => {
       if (f === shown || !sheet.complete || !sheet.naturalWidth) return;
       shown = f;
@@ -339,8 +360,10 @@
       ctx.drawImage(sheet, f * H.w, 0, H.w, H.h, 0, 0, idleCv.width, idleCv.height);
     };
     sheet.onload = () => { shown = -1; draw(0); };
+    if (sheet.complete) draw(0);   // already cached: it may have loaded before onload was set
     if (!reduced) {
       let si = 0, t0 = performance.now();
+      // plays the DAY steps in order, forever
       (function loop(ts) {
         let [frames, ms] = DAY[si];
         if (ts - t0 >= frames.length * ms) { si = (si + 1) % DAY.length; t0 = ts; [frames, ms] = DAY[si]; }
@@ -351,6 +374,7 @@
   }
 
   // ------------------------------------------------------------ tilt cards
+  // [data-tilt] cards lean towards the pointer (mouse/trackpad only)
   if (!reduced && window.matchMedia("(hover: hover)").matches) {
     $$("[data-tilt]").forEach((card) => {
       card.addEventListener("pointermove", (e) => {
@@ -368,6 +392,7 @@
   }
 
   // ------------------------------------------------------------ copy email
+  // [data-copy] buttons copy their value and flash "COPIED!"
   $$("[data-copy]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const done = () => {
@@ -391,10 +416,12 @@
     const palette = ["#e0115f", "#9b111e", "#8a0303", "#b2beb5", "#6a52d9", "#78863a"];
     const parts = [];
     const mouse = { x: -999, y: -999 };
+    /** Matches the canvas to the window (capped at 2x density). */
     function resize() {
       dpr = Math.min(2, window.devicePixelRatio || 1);
       w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr;
     }
+    /** (Re)places particle p: anywhere on first fill, otherwise just below the screen. */
     function spawn(p, init) {
       p.x = Math.random() * w;
       p.y = init ? Math.random() * h : h + 10;
@@ -409,6 +436,7 @@
     for (let i = 0; i < N; i++) { const p = {}; spawn(p, true); parts.push(p); }
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", (e) => { mouse.x = e.clientX * dpr; mouse.y = e.clientY * dpr; }, { passive: true });
+    // drift up, sway, get pushed by scrolling and by the pointer; respawn when off screen
     (function frame() {
       ctx.clearRect(0, 0, w, h);
       const boost = Math.max(-6, Math.min(6, velocity)) * 0.35 * dpr;

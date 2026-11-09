@@ -1,0 +1,10 @@
+# Lint with:  python -m pip install ruff  &&  python -m ruff check .
+line-length = 120
+target-version = "py312"
+extend-exclude = ["core/migrations"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "D1"]
+
+[lint.per-file-ignores]
+"core/content.py" = ["E501"]   # long lines of page copy read better unwrapped

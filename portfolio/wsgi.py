@@ -1,3 +1,4 @@
+"""WSGI entry point (PythonAnywhere's WSGI file imports `application` from here)."""
 import os
 
 from django.core.wsgi import get_wsgi_application

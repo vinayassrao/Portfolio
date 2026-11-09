@@ -84,7 +84,7 @@
     <div class="paths" data-stagger="90">
       {% for p in paths %}
       <a class="path-card px-frame" href="{% url p.key %}" data-tilt>
-        <canvas data-sprite="{{ p.sprite }}" data-scale="4"{% if p.sprite == 'hero' %} data-anim="idle"{% endif %}></canvas>
+        {% include "core/_sprite.html" with sprite=p.sprite scale=4 %}
         <span class="num">CH.{{ p.chapter }}</span>
         <h3>{{ p.label }}</h3>
         <p>{{ p.blurb }}</p>
