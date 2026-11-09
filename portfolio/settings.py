@@ -74,3 +74,11 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Production (DEBUG off, behind an HTTPS proxy such as PythonAnywhere): trust the proxy's HTTPS header,
+# send cookies over HTTPS only, and accept form posts from the site's own https origin(s).
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS = ["https://" + h for h in ALLOWED_HOSTS if h not in ("localhost", "127.0.0.1")]
