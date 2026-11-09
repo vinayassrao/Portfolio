@@ -117,10 +117,10 @@ WHERE_I_FIT = [
                 "game running.",
     },
     {
-        "title": "Animation & VFX",
+        "title": "Animation",
         "sprite": "chest",
         "body": "Python automation, pipeline tooling and the infrastructure under render and "
-                "asset workflows, from someone who also paints and cares how the picture looks.",
+                "asset workflows, from someone who also animates and paints, and cares how the picture looks.",
     },
 ]
 
