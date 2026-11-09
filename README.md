@@ -1,5 +1,7 @@
 # Vinaya S Rao · Portfolio
 
+**Live site: [vinayassrao.pythonanywhere.com](https://vinayassrao.pythonanywhere.com)**
+
 A pixel-art portfolio site built with **Django**. Instead of a plain menu, the home page is a pixel-art room:
 click the PC, the bookshelf or the phone and a little version of me walks over, acts it out, and the page opens.
 
@@ -38,6 +40,7 @@ JavaScript turned off.
 - **Pixel-art rendering:** art is drawn at a whole number of device pixels per art pixel (`image-rendering: pixelated`),
   so it stays crisp on normal and high-DPI screens.
 - **Contact form** stored through the Django admin.
+- **Hosting:** PythonAnywhere (Python 3.13, SQLite, static files served by PythonAnywhere, HTTPS forced).
 
 ## Run it locally
 
@@ -83,6 +86,30 @@ host's static-file support):
 | `DJANGO_SECRET_KEY` | a long random string |
 | `DJANGO_DEBUG` | `0` |
 | `DJANGO_ALLOWED_HOSTS` | your domain(s), comma-separated |
+
+With `DJANGO_DEBUG=0` the settings trust the HTTPS proxy header, use secure cookies and allow CSRF from
+`https://<each allowed host>`.
+
+### PythonAnywhere (how the live site runs)
+
+- **Web app:** manual configuration, Python 3.13, virtualenv at `~/.venvs/portfolio`,
+  source and working directory `~/Portfolio`.
+- **WSGI file:** sets `DJANGO_SETTINGS_MODULE=portfolio.settings`, the variables above, and reads the secret key from a
+  private file outside the repository (never committed).
+- **Static files:** URL `/static/` → `~/Portfolio/staticfiles`.
+- **Security:** Force HTTPS on.
+
+To ship an update after pushing to `main`, run this in a PythonAnywhere Bash console, then click **Reload** on the Web tab:
+
+```bash
+cd ~/Portfolio && git pull
+source ~/.venvs/portfolio/bin/activate
+export DJANGO_SECRET_KEY="$(cat ~/.portfolio_secret_key)" DJANGO_DEBUG=0 DJANGO_ALLOWED_HOSTS=vinayassrao.pythonanywhere.com
+python manage.py migrate
+python manage.py collectstatic --noinput
+```
+
+The free plan disables the site after a month unless you click **Run until 1 month from today** on the Web tab.
 
 ## Contact
 
