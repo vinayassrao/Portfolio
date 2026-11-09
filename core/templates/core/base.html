@@ -57,7 +57,7 @@
         <i style="background:#b2beb5"></i><i style="background:#4b36a8"></i><i style="background:#8a0303"></i><i style="background:#e0115f"></i><i style="background:#4b5320"></i>
       </div>
       <div class="footer-inner">
-        <p>© {% now "Y" %} {{ PROFILE.name }} · Built with Django, drawn pixel by pixel · <a class="source-link" href="{{ PROFILE.source }}" target="_blank" rel="noopener">See the code ↗</a></p>
+        <p>© {% now "Y" %} {{ PROFILE.name }} · Built with Django, drawn pixel by pixel.</p>
         <div class="footer-links">
           <a href="mailto:{{ PROFILE.email }}">{{ PROFILE.email }}</a>
           {% for link in PROFILE.links %}<a class="icon-link" href="{{ link.url }}" target="_blank" rel="noopener">{% if link.icon %}<img class="link-icon" src="{% static 'core/img/icons/' %}{{ link.icon }}.png?v={{ ASSET_V }}" alt="" width="16" height="16">{% endif %}{{ link.label }}</a>{% endfor %}
