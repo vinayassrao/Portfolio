@@ -39,7 +39,8 @@ JavaScript turned off.
 - **Vanilla JavaScript + Canvas 2D** for the room, the character animation and the page effects.
 - **Pixel-art rendering:** art is drawn at a whole number of device pixels per art pixel (`image-rendering: pixelated`),
   so it stays crisp on normal and high-DPI screens.
-- **Contact form:** messages are saved (readable in the Django admin) and emailed to me through Gmail SMTP, with the
+- **Contact page:** an email card (mail link, copy button) with GitHub and LinkedIn as pixel-logo buttons, next to
+  a contact form. Messages are saved (readable in the Django admin) and emailed to me through Gmail SMTP, with the
   sender as Reply-To. A honeypot field drops bot submissions; a mail failure never loses a message. Covered by tests
   (`manage.py test core`).
 - **Hosting:** PythonAnywhere (Python 3.13, SQLite, static files served by PythonAnywhere, HTTPS forced).
@@ -116,6 +117,25 @@ python manage.py collectstatic --noinput
 ```
 
 The free plan disables the site after a month unless you click **Run until 1 month from today** on the Web tab.
+
+#### Contact-form emails
+
+Messages sent through the contact form are emailed to `CONTACT_NOTIFY_EMAIL` through Gmail. One-time setup:
+
+1. Create a Gmail App Password at https://myaccount.google.com/apppasswords (2-Step Verification must be on).
+2. Store it on PythonAnywhere, outside the repository (paste it without spaces):
+   ```bash
+   echo 'APP_PASSWORD' > ~/.portfolio_gmail_app_password && chmod 600 ~/.portfolio_gmail_app_password
+   ```
+3. In the WSGI file, next to the other `os.environ[...]` lines:
+   ```python
+   os.environ["EMAIL_HOST_PASSWORD"] = open("/home/vinayassrao/.portfolio_gmail_app_password").read().strip()
+   ```
+4. Reload the web app and send a test message from `/contact/`. If no email arrives, the web app's error log shows
+   why; the message is still saved and visible in `/admin/`.
+
+To test real sending locally, start the server with `EMAIL_HOST_PASSWORD` set in that terminal only; without it,
+the email is printed to the server console instead.
 
 ## Contact
 

@@ -26,8 +26,15 @@
         <li>Based in {{ PROFILE.location }}</li>
         <li>Remote-first, open to relocating internationally</li>
         <li>Game studios, tech teams, animation &amp; VFX pipelines</li>
-        {% for link in PROFILE.links %}<li><a class="icon-link" href="{{ link.url }}" target="_blank" rel="noopener">{% if link.icon %}<img class="link-icon" src="{% static 'core/img/icons/' %}{{ link.icon }}.png?v={{ ASSET_V }}" alt="" width="16" height="16">{% endif %}{{ link.label }}</a></li>{% endfor %}
       </ul>
+      {% if PROFILE.links %}
+      <div class="elsewhere">
+        <span class="eyebrow">Find me elsewhere</span>
+        <div class="btn-row">
+          {% for link in PROFILE.links %}<a class="btn btn--ghost social-btn" href="{{ link.url }}" target="_blank" rel="noopener">{% if link.icon %}<img class="social-icon" src="{% static 'core/img/icons/' %}{{ link.icon }}.png?v={{ ASSET_V }}" alt="" width="16" height="16">{% endif %}{{ link.label }} <span class="arrow">↗</span></a>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
     </div>
 
     <form class="form px-frame" method="post" action="{% url 'contact' %}#message" id="message" data-reveal="right" novalidate>
