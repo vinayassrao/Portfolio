@@ -84,6 +84,12 @@ host's static-file support):
 | `DJANGO_DEBUG` | `0` |
 | `DJANGO_ALLOWED_HOSTS` | your domain(s), comma-separated |
 
+## Contact
+
+- GitHub: [vinayassrao](https://github.com/vinayassrao)
+- LinkedIn: [vinayasrao](https://www.linkedin.com/in/vinayasrao/)
+- Email: vinayassrao@gmail.com
+
 ## License
 
 Code and art © Vinaya S Rao. All rights reserved unless a license is added.
