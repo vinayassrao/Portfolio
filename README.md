@@ -22,8 +22,7 @@ JavaScript turned off.
 | Phone | Contact | takes a call |
 
 ![The room](docs/screenshots/room.png)
-![Acting out the Skills page](docs/screenshots/room-pose.png)
-![Acting out the Experience page](docs/screenshots/room-experience.png)
+![Acting out the About page](docs/screenshots/room-about.png)
 
 - Click an object: he walks over, holds the pose for about a second, then the page opens. Any click or key skips ahead.
 - Or click the floor and walk him with <kbd>←</kbd> <kbd>→</kbd> (or <kbd>A</kbd> <kbd>D</kbd>), then
