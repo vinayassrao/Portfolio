@@ -15,6 +15,8 @@ PROFILE = {
         "remote or international."
     ),
     # Links shown in the footer and on the contact page (icon: a pixel logo in img/icons/<icon>.png).
+    # This site's own code, linked from the footer.
+    "source": "https://github.com/vinayassrao/Portfolio",
     "links": [
         {"label": "GitHub", "url": "https://github.com/vinayassrao", "icon": "github"},
         {"label": "LinkedIn", "url": "https://www.linkedin.com/in/vinayasrao/", "icon": "linkedin"},
