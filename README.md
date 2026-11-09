@@ -39,7 +39,9 @@ JavaScript turned off.
 - **Vanilla JavaScript + Canvas 2D** for the room, the character animation and the page effects.
 - **Pixel-art rendering:** art is drawn at a whole number of device pixels per art pixel (`image-rendering: pixelated`),
   so it stays crisp on normal and high-DPI screens.
-- **Contact form** stored through the Django admin.
+- **Contact form:** messages are saved (readable in the Django admin) and emailed to me through Gmail SMTP, with the
+  sender as Reply-To. A honeypot field drops bot submissions; a mail failure never loses a message. Covered by tests
+  (`manage.py test core`).
 - **Hosting:** PythonAnywhere (Python 3.13, SQLite, static files served by PythonAnywhere, HTTPS forced).
 
 ## Run it locally
@@ -86,6 +88,9 @@ host's static-file support):
 | `DJANGO_SECRET_KEY` | a long random string |
 | `DJANGO_DEBUG` | `0` |
 | `DJANGO_ALLOWED_HOSTS` | your domain(s), comma-separated |
+| `EMAIL_HOST_PASSWORD` | a Gmail [App Password](https://myaccount.google.com/apppasswords) for the sending account (16 letters, no spaces). Without it, emails are only printed to the console. |
+| `EMAIL_HOST_USER` | optional: the Gmail account that sends (default `vinayassrao@gmail.com`) |
+| `CONTACT_NOTIFY_EMAIL` | optional: where contact messages are emailed (default `vinayassrao@gmail.com`; empty turns emails off) |
 
 With `DJANGO_DEBUG=0` the settings trust the HTTPS proxy header, use secure cookies and allow CSRF from
 `https://<each allowed host>`.
@@ -94,8 +99,9 @@ With `DJANGO_DEBUG=0` the settings trust the HTTPS proxy header, use secure cook
 
 - **Web app:** manual configuration, Python 3.13, virtualenv at `~/.venvs/portfolio`,
   source and working directory `~/Portfolio`.
-- **WSGI file:** sets `DJANGO_SETTINGS_MODULE=portfolio.settings`, the variables above, and reads the secret key from a
-  private file outside the repository (never committed).
+- **WSGI file:** sets `DJANGO_SETTINGS_MODULE=portfolio.settings`, the variables above, and reads the secret key and the
+  Gmail App Password from private files outside the repository (never committed): `~/.portfolio_secret_key` and
+  `~/.portfolio_gmail_app_password`.
 - **Static files:** URL `/static/` → `~/Portfolio/staticfiles`.
 - **Security:** Force HTTPS on.
 
