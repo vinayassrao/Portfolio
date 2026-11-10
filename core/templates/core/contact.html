@@ -12,7 +12,7 @@
   <div class="ghost" data-parallax="0.25" aria-hidden="true">HELLO</div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section section--flush">
   <div class="wrap contact-grid">
     <div class="mail-card px-frame" data-reveal="left">
       <canvas data-sprite="letter" data-scale="6"></canvas>
@@ -40,7 +40,7 @@
     <form class="form px-frame" method="post" action="{% url 'contact' %}#message" id="message" data-reveal="right" novalidate>
       {% csrf_token %}
       {% if messages %}{% for m in messages %}<div class="flash" role="status">✓ {{ m }}</div>{% endfor %}{% endif %}
-      <span class="eyebrow" style="margin:0">Or leave a message</span>
+      <span class="eyebrow">Or leave a message</span>
       {% for field in form %}
         {% if field.name == "website" %}
           <div class="hp" aria-hidden="true">{{ field }}</div>

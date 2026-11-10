@@ -63,6 +63,12 @@
   let act = null, nextAct = performance.now() + 3500;
   // true once an image has loaded
   const ok = (im) => im.complete && im.naturalWidth;
+  // keyboard controls once the room has focus
+  const LEFT = new Set(["ArrowLeft", "a", "A"]);
+  const RIGHT = new Set(["ArrowRight", "d", "D"]);
+  const OPEN = new Set(["ArrowUp", "w", "W", "e", "E", "Enter"]);
+  // a plain left click: no modifier key asking for a new tab/window or a download
+  const plainClick = (e) => e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
 
   // ---- him: one explicit state machine
   // idle -> acting (a little fidget) / strolling (arrow keys) / walking (to an object)
@@ -138,7 +144,7 @@
   // a click on an object sends him there instead of opening the link at once (a second click skips ahead)
   objs.forEach((o) => {
     o.a.addEventListener("click", (e) => {
-      if (reduced || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      if (reduced || !plainClick(e)) return;
       e.preventDefault();
       e.stopPropagation();
       if (onTrip()) { leave(); return; }
@@ -152,18 +158,14 @@
   stage.addEventListener("pointerdown", (e) => { if (e.target === stage || e.target === cv) stage.focus(); });
   stage.addEventListener("keydown", (e) => {
     if (e.target !== stage || onTrip()) return;
-    const k2 = e.key;
-    if (k2 === "ArrowLeft" || k2 === "a" || k2 === "A") { keys.left = true; e.preventDefault(); }
-    else if (k2 === "ArrowRight" || k2 === "d" || k2 === "D") { keys.right = true; e.preventDefault(); }
-    else if (k2 === "ArrowUp" || k2 === "w" || k2 === "W" || k2 === "e" || k2 === "E" || k2 === "Enter") {
-      e.preventDefault();
-      if (near) walkTo(near);
-    } else if (k2 === "Escape") stage.blur();
+    if (LEFT.has(e.key)) { keys.left = true; e.preventDefault(); }
+    else if (RIGHT.has(e.key)) { keys.right = true; e.preventDefault(); }
+    else if (OPEN.has(e.key)) { e.preventDefault(); if (near) walkTo(near); }
+    else if (e.key === "Escape") stage.blur();
   });
   stage.addEventListener("keyup", (e) => {
-    const k2 = e.key;
-    if (k2 === "ArrowLeft" || k2 === "a" || k2 === "A") keys.left = false;
-    if (k2 === "ArrowRight" || k2 === "d" || k2 === "D") keys.right = false;
+    if (LEFT.has(e.key)) keys.left = false;
+    if (RIGHT.has(e.key)) keys.right = false;
   });
   // coming back with the browser's Back button: reset the room
   window.addEventListener("pageshow", (e) => {

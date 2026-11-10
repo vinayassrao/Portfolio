@@ -59,12 +59,13 @@ python -m venv .venv
 Open http://127.0.0.1:8000. To read contact-form messages, create an admin user
 (`manage.py createsuperuser`) and visit `/admin/`.
 
-Tests and lint (rules in `ruff.toml`):
+Tests, lint and formatting (rules in `ruff.toml`):
 
 ```powershell
 .\.venv\Scripts\python manage.py test core
 .\.venv\Scripts\python -m pip install ruff
 .\.venv\Scripts\python -m ruff check .
+.\.venv\Scripts\python -m ruff format --check .
 ```
 
 ## Project layout
@@ -72,6 +73,8 @@ Tests and lint (rules in `ruff.toml`):
 | Path | What |
 |---|---|
 | `core/content.py` | All the copy: bio, projects, experience, skills, links (edit text here, not in templates) |
+| `core/views.py` | One small view per page, plus the contact form (post/redirect/get) |
+| `core/notifications.py` | Emails each contact message to me and records the outcome on the message |
 | `core/templates/core/` | Page templates; `base.html` holds the nav, footer and scripts |
 | `core/static/core/css/site.css` | Palette, pixel frames, the room, scroll and reveal animations |
 | `core/static/core/js/room.js` | The room: hit areas, walking, poses, ambient effects |

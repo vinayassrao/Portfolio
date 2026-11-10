@@ -1,4 +1,5 @@
 """Admin: read contact-form messages and tick them off as read."""
+
 from django.contrib import admin
 
 from .models import ContactMessage

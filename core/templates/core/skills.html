@@ -11,7 +11,7 @@
   <div class="ghost" data-parallax="0.25" aria-hidden="true">ITEMS</div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section section--flush">
   <div class="wrap">
     <div class="inventory">
       {% for g in groups %}
@@ -30,7 +30,7 @@
   </div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section section--flush">
   <div class="wrap">
     <div class="section-head">
       <span class="chapter" data-reveal="left"><b>◆</b> In progress</span>
@@ -40,7 +40,7 @@
     <div class="unlocks" data-stagger="120">
       {% for u in unlocks %}
       <div class="unlock">
-        <div class="bar-label"><span style="color:var(--ash-100);font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;font-size:1rem">{{ u.name }}</span><span>{{ u.note }}</span></div>
+        <div class="bar-label"><span class="unlock-name">{{ u.name }}</span><span>{{ u.note }}</span></div>
         <div class="bar {% cycle 'green' 'indigo' '' %}" data-fill="{{ u.value }}" role="img" aria-label="{{ u.name }} in progress"><i></i></div>
       </div>
       {% endfor %}

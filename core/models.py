@@ -1,9 +1,10 @@
 """Database models."""
+
 from django.db import models
 
 
 class ContactMessage(models.Model):
-    """A message sent through the contact form (also emailed to the owner, see views.notify_by_email)."""
+    """A message sent through the contact form (also emailed to the owner, see notifications.notify_by_email)."""
 
     name = models.CharField(max_length=120)
     email = models.EmailField()
@@ -12,7 +13,7 @@ class ContactMessage(models.Model):
     is_read = models.BooleanField(default=False)
 
     class EmailStatus(models.TextChoices):
-        """What happened to the email copy: pending -> sent | failed | off. Set once, by views.notify_by_email."""
+        """What happened to the email copy: pending -> sent | failed | off. Set once, via record_email_status."""
 
         PENDING = "pending", "Pending"
         SENT = "sent", "Emailed"
@@ -29,3 +30,18 @@ class ContactMessage(models.Model):
     def __str__(self):
         """Show the sender and the date, e.g. in the admin list."""
         return f"{self.name} <{self.email}> · {self.created_at:%Y-%m-%d}"
+
+    @property
+    def email_pending(self):
+        """True until the email outcome has been recorded."""
+        return self.email_status == self.EmailStatus.PENDING
+
+    def record_email_status(self, status):
+        """Record the email outcome (pending -> sent | failed | off) and save just that field.
+
+        The status leaves "pending" only once; a second attempt raises ValueError.
+        """
+        if not self.email_pending:
+            raise ValueError(f"message {self.pk} was already handled (email_status={self.email_status!r})")
+        self.email_status = status
+        self.save(update_fields=["email_status"])

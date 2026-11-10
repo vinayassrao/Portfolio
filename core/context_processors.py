@@ -1,4 +1,5 @@
 """Template context shared by every page: profile, nav and the static-file version."""
+
 from functools import lru_cache
 from pathlib import Path
 

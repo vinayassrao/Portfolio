@@ -11,7 +11,7 @@
   <div class="ghost" data-parallax="0.25" aria-hidden="true">QUESTS</div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section section--flush">
   <div class="wrap">
     {% for p in projects %}
     <article class="project" id="{{ p.slug }}">
@@ -32,14 +32,14 @@
         <div class="chips" data-stagger="40" data-reveal-children="scale">
           {% for t in p.stack %}<span class="chip">{{ t }}</span>{% endfor %}
         </div>
-        {% if p.url %}<p style="margin-top:26px"><a class="btn btn--ghost" href="{{ p.url }}" target="_blank" rel="noopener">View repo <span class="arrow">→</span></a></p>{% endif %}
+        {% if p.url %}<p class="project-link"><a class="btn btn--ghost" href="{{ p.url }}" target="_blank" rel="noopener">View repo <span class="arrow">→</span></a></p>{% endif %}
       </div>
     </article>
     {% endfor %}
   </div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section section--flush">
   <div class="wrap">
     <div class="cta-band px-frame" data-reveal="scale">
       <h2>Want the backstory behind these?</h2>

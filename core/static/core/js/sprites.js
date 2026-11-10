@@ -46,7 +46,6 @@
   const DOOR_ICON = [["...KKKKKK...", "..KAAAAAAK..", ".KAIIIIIIAK.", "KAIiiiiiiIAK", "KAIiiiiiiIAK", "KAIiiiiiiIAK", "KAIiiiiRiIAK", "KAIiiiiiiIAK", "KAIiiiiiiIAK", "KAIiiiiiiIAK", "KAAAAAAAAAAK", "KKKKKKKKKKKK"]];
 
   // ---------------------------------------------------------------- IBM 8-bar logo, pixelated
-  // ---------------------------------------------------------------- IBM 8-bar logo, pixelated
   // 40 columns. Each of the 8 bars is 2px tall with a 1px gap. Spans are [from, to] columns,
   // traced from the logo's construction grid.
   const IBM_BARS = [
@@ -77,17 +76,9 @@
   const IBM_PAL = { B: "#4589ff", L: "#78a9ff" };
 
   // ---------------------------------------------------------------- helpers
-  /** Pads or trims every frame to exactly w x h characters (authoring may use "|" as a visual guide). */
+  /** Pads or trims every frame to exactly w x h characters ("." = transparent). */
   function normalise(frames, w, h) {
-    return frames.map(function (raw) {
-      const rows = raw.map((r) => r.replace(/\|/g, ""));
-      const out = [];
-      for (let y = 0; y < h; y++) {
-        const r = rows[y] || "";
-        out.push((r + ".".repeat(w)).slice(0, w));
-      }
-      return out;
-    });
+    return frames.map((rows) => Array.from({ length: h }, (_, y) => ((rows[y] || "") + ".".repeat(w)).slice(0, w)));
   }
 
   /** Builds a sprite record: size, palette, normalised frames and named animations ({ frames, rate }). */

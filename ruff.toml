@@ -1,4 +1,4 @@
-# Lint with:  python -m pip install ruff  &&  python -m ruff check .
+# Lint and format with:  python -m pip install ruff  &&  python -m ruff check .  &&  python -m ruff format .
 line-length = 120
 target-version = "py312"
 extend-exclude = ["core/migrations"]

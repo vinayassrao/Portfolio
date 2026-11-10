@@ -8,7 +8,8 @@
   // tiny query helpers: first match / all matches (as an array), optionally inside el
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
-  document.documentElement.classList.add("js");
+  // a plain left click: no modifier key asking for a new tab/window, a download or a selection
+  const plainClick = (e) => e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
 
   // ------------------------------------------------------------ pixel transition
   // A grid of coloured cells covers the page before navigating and uncovers the next page on arrival.
@@ -53,7 +54,7 @@
   // Same-site link clicks play the transition; new tabs, downloads, modified clicks, admin and in-page anchors do not.
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[href]");
-    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (!a || e.defaultPrevented || !plainClick(e)) return;
     if (a.target === "_blank" || a.hasAttribute("download")) return;
     const url = new URL(a.href, location.href);
     if (url.origin !== location.origin || url.pathname.startsWith("/admin")) return;
@@ -164,7 +165,7 @@
     // a nav click starts a dash to that link (a second click while dashing skips to the page)
     links.addEventListener("click", (e) => {
       const a = e.target.closest("a[href]");
-      if (!a || !wide.matches || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      if (!a || !wide.matches || !plainClick(e)) return;
       if (state !== R.IDLE) { e.preventDefault(); finish(); return; }
       if (a.getAttribute("aria-current") === "page" || new URL(a.href, location.href).origin !== location.origin) return;
       e.preventDefault();
@@ -319,9 +320,11 @@
   });
 
   // ------------------------------------------------------------ typewriter
-  // [data-typer]: types and deletes each word of a JSON list in turn
+  // [data-typer="id"]: types and deletes, in turn, each word of the JSON list in <script id="id"> (Django json_script)
   $$("[data-typer]").forEach((el) => {
-    const words = JSON.parse(el.dataset.typer);
+    const src = document.getElementById(el.dataset.typer);
+    const words = src ? JSON.parse(src.textContent) : [];
+    if (!words.length) return;
     if (reduced) { el.textContent = words[0]; return; }
     let w = 0, c = 0, del = false;
     (function step() {

@@ -3,17 +3,13 @@
 PROFILE = {
     "name": "Vinaya S Rao",
     "short": "Vinaya",
-    "headline": "Backend, data & infrastructure engineer who also builds games.",
     "pitch": (
         "I build the systems people never see but always feel: backend services, data "
         "pipelines and cloud infrastructure, for products, platforms and games."
     ),
     "email": "vinayassrao@gmail.com",
     "location": "Mangalore, Karnataka, India",
-    "availability": (
-        "Open to backend, data engineering, DevOps/SRE and game-industry roles, "
-        "remote or international."
-    ),
+    "availability": "Open to backend, data engineering, DevOps/SRE and game-industry roles, remote or international.",
     # Links shown in the footer and on the contact page (icon: a pixel logo in img/icons/<icon>.png).
     "links": [
         {"label": "GitHub", "url": "https://github.com/vinayassrao", "icon": "github"},
@@ -31,18 +27,42 @@ HOBBIES = [
 ]
 
 NAV = [
-    {"key": "home", "label": "Home", "chapter": "00", "sprite": "door",
-     "blurb": "Back to the start."},
-    {"key": "about", "label": "About", "chapter": "01", "sprite": "hero",
-     "blurb": "Who I am, how I work and where I'm going."},
-    {"key": "projects", "label": "Projects", "chapter": "02", "sprite": "chest",
-     "blurb": "Luxmora, a crypto lakehouse, custom NER and more."},
-    {"key": "experience", "label": "Experience", "chapter": "03", "sprite": "scroll",
-     "blurb": "Four years of IBM delivery for Bell Canada and Pearson."},
-    {"key": "skills", "label": "Skills", "chapter": "04", "sprite": "shard",
-     "blurb": "The full inventory: languages, pipelines, cloud."},
-    {"key": "contact", "label": "Contact", "chapter": "05", "sprite": "letter",
-     "blurb": "Studios, teams, collaborators: say hello."},
+    {"key": "home", "label": "Home", "chapter": "00", "sprite": "door", "blurb": "Back to the start."},
+    {
+        "key": "about",
+        "label": "About",
+        "chapter": "01",
+        "sprite": "hero",
+        "blurb": "Who I am, how I work and where I'm going.",
+    },
+    {
+        "key": "projects",
+        "label": "Projects",
+        "chapter": "02",
+        "sprite": "chest",
+        "blurb": "Luxmora, a crypto lakehouse, custom NER and more.",
+    },
+    {
+        "key": "experience",
+        "label": "Experience",
+        "chapter": "03",
+        "sprite": "scroll",
+        "blurb": "Four years of IBM delivery for Bell Canada and Pearson.",
+    },
+    {
+        "key": "skills",
+        "label": "Skills",
+        "chapter": "04",
+        "sprite": "shard",
+        "blurb": "The full inventory: languages, pipelines, cloud.",
+    },
+    {
+        "key": "contact",
+        "label": "Contact",
+        "chapter": "05",
+        "sprite": "letter",
+        "blurb": "Studios, teams, collaborators: say hello.",
+    },
 ]
 
 ROLES = ["Backend Engineer", "Data Engineer", "SRE / DevOps", "Game Systems Builder"]
@@ -55,9 +75,28 @@ STATS = [
 ]
 
 STACK_MARQUEE = [
-    "Python", "Django", "DRF", "Phaser", "Unity", "TypeScript", "React", "C++",
-    "Kafka", "ksqlDB", "Airflow", "dbt", "PostgreSQL", "Redis", "Docker",
-    "Terraform", "Terragrunt", "AWS", "GitHub Actions", "Grafana", "Java", "spaCy",
+    "Python",
+    "Django",
+    "DRF",
+    "Phaser",
+    "Unity",
+    "TypeScript",
+    "React",
+    "C++",
+    "Kafka",
+    "ksqlDB",
+    "Airflow",
+    "dbt",
+    "PostgreSQL",
+    "Redis",
+    "Docker",
+    "Terraform",
+    "Terragrunt",
+    "AWS",
+    "GitHub Actions",
+    "Grafana",
+    "Java",
+    "spaCy",
 ]
 
 BIO = {
@@ -106,28 +145,34 @@ WHERE_I_FIT = [
         "title": "Tech teams",
         "sprite": "scroll",
         "body": "Backend services in Python and Java, streaming and batch data platforms, "
-                "Terraform on AWS, CI/CD with security gates, SRE and observability. "
-                "Documented, tested and handed over cleanly.",
+        "Terraform on AWS, CI/CD with security gates, SRE and observability. "
+        "Documented, tested and handed over cleanly.",
     },
     {
         "title": "Game studios",
         "sprite": "hero",
         "body": "Online services, player accounts and save systems, telemetry and analytics "
-                "pipelines, build and deploy infrastructure. The backbone that keeps a live "
-                "game running.",
+        "pipelines, build and deploy infrastructure. The backbone that keeps a live "
+        "game running.",
     },
     {
         "title": "Animation",
         "sprite": "chest",
         "body": "Python automation, pipeline tooling and the infrastructure under render and "
-                "asset workflows, from someone who also animates and paints, and cares how the picture looks.",
+        "asset workflows, from someone who also animates and paints, and cares how the picture looks.",
     },
 ]
 
 SIDE_QUESTS = [
     {"title": "Painting", "body": "Colour, light and composition, the same instincts I bring to how a screen feels."},
-    {"title": "Kannada poetry", "body": "Writing in my mother tongue: rhythm, economy, and saying a lot with very little."},
-    {"title": "A book in progress", "body": "About how people think: attention, motivation, and why we make the choices we do."},
+    {
+        "title": "Kannada poetry",
+        "body": "Writing in my mother tongue: rhythm, economy, and saying a lot with very little.",
+    },
+    {
+        "title": "A book in progress",
+        "body": "About how people think: attention, motivation, and why we make the choices we do.",
+    },
 ]
 
 PROJECTS = [
@@ -186,8 +231,7 @@ PROJECTS = [
             "dimension, connection).",
             "Built the pipeline end to end: annotated JSON spans to spaCy training format, a CLI with "
             "configurable iterations and model paths, run over 50 unseen floor-plan descriptions.",
-            "Regex post-processing resolves connection entities into room-pair edge lists, exported "
-            "per plan as CSV.",
+            "Regex post-processing resolves connection entities into room-pair edge lists, exported per plan as CSV.",
             "Visualizes each plan's room adjacency as an undirected graph with NetworkX and Matplotlib; "
             "documented setup, pinned dependencies and known limitations.",
         ],
@@ -221,8 +265,7 @@ EXPERIENCE = [
             "Linux and GitHub workflow.",
             "Co-developed a modular infrastructure-as-code structure: reusable Terraform modules in "
             "per-service repositories, composed by a Terragrunt deployment repository.",
-            "Used it to provision and deploy Amazon RDS and Amazon ECS in the client's non-production "
-            "environment.",
+            "Used it to provision and deploy Amazon RDS and Amazon ECS in the client's non-production environment.",
             "Building CI/CD pipelines for the Terragrunt repositories, with shared policy and security "
             "scanning checks common across repos.",
             "Coordinating with architects, AWS design contacts and teammates across IBM and the client.",
@@ -235,15 +278,13 @@ EXPERIENCE = [
         "dates": "Jul 2022 – Aug 2026",
         "current": False,
         "points": [
-            "Key team member on data management solutions covering master data for device, IoT and "
-            "pricing.",
+            "Key team member on data management solutions covering master data for device, IoT and pricing.",
             "Built data engineering solutions in Python and Java; designed and optimized transformation "
             "pipelines for data quality, consistency and reliability at enterprise scale.",
             "Troubleshot and resolved defects in data processing workflows, reducing defect rates and "
             "improving system stability.",
             "Monitored workflows and servers with Grafana to catch issues earlier.",
-            "Automated log management with a daily cron shell script and added daily disk-usage email "
-            "reports.",
+            "Automated log management with a daily cron shell script and added daily disk-usage email reports.",
             "Refactored unstructured legacy components and introduced structured coding practices.",
         ],
     },
@@ -254,8 +295,8 @@ COMPETITIVE = {
     "dates": "2020 – Present",
     "where": "C++ and Python · LeetCode, CodeChef, GeeksforGeeks",
     "body": "Six years of algorithmic problem solving under strict time and memory limits: data "
-            "structures, graph algorithms, dynamic programming and complexity analysis, applied to "
-            "optimizing real pipeline code.",
+    "structures, graph algorithms, dynamic programming and complexity analysis, applied to "
+    "optimizing real pipeline code.",
 }
 
 EDUCATION = [
@@ -275,13 +316,39 @@ CERTIFICATIONS = [
 
 SKILLS = [
     {"name": "Languages", "sprite": "scroll", "items": ["Python", "TypeScript", "Java", "C++", "SQL", "Shell"]},
-    {"name": "Backend & APIs", "sprite": "chest", "items": ["Django", "Django REST Framework", "Flask", "REST design", "WebSockets", "JWT auth"]},
+    {
+        "name": "Backend & APIs",
+        "sprite": "chest",
+        "items": ["Django", "Django REST Framework", "Flask", "REST design", "WebSockets", "JWT auth"],
+    },
     {"name": "Game & Frontend", "sprite": "hero", "items": ["Phaser", "Unity", "React", "TypeScript"]},
-    {"name": "Data Pipelines", "sprite": "shard", "items": ["Kafka", "ksqlDB", "Airflow", "dbt", "Data ingestion", "Data-quality gates"]},
+    {
+        "name": "Data Pipelines",
+        "sprite": "shard",
+        "items": ["Kafka", "ksqlDB", "Airflow", "dbt", "Data ingestion", "Data-quality gates"],
+    },
     {"name": "Databases", "sprite": "chest", "items": ["PostgreSQL", "Redis", "Relational modeling"]},
-    {"name": "DevOps & Cloud", "sprite": "relic", "items": ["Docker", "Docker Compose", "GitHub Actions", "Terraform", "Terragrunt", "AWS RDS", "AWS ECS", "Grafana", "Git"]},
+    {
+        "name": "DevOps & Cloud",
+        "sprite": "relic",
+        "items": [
+            "Docker",
+            "Docker Compose",
+            "GitHub Actions",
+            "Terraform",
+            "Terragrunt",
+            "AWS RDS",
+            "AWS ECS",
+            "Grafana",
+            "Git",
+        ],
+    },
     {"name": "NLP & Analysis", "sprite": "letter", "items": ["spaCy", "NER", "pandas", "NetworkX", "Matplotlib"]},
-    {"name": "Fundamentals", "sprite": "shard", "items": ["Data structures", "Algorithms", "Dynamic programming", "Graph algorithms", "Complexity analysis"]},
+    {
+        "name": "Fundamentals",
+        "sprite": "shard",
+        "items": ["Data structures", "Algorithms", "Dynamic programming", "Graph algorithms", "Complexity analysis"],
+    },
 ]
 
 NEXT_UNLOCKS = [
