@@ -4,7 +4,7 @@ from unittest import mock
 
 from django.core import mail
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import path, reverse
 
 from .models import ContactMessage
 from .notifications import notify_by_email
@@ -31,6 +31,23 @@ class PageTests(TestCase):
         r = self.client.get("/no-such-room/")
         self.assertEqual(r.status_code, 404)
         self.assertContains(r, "Wrong door", status_code=404)
+
+    @override_settings(DEBUG=False, ROOT_URLCONF="core.tests")
+    def test_server_error_shows_the_500_page(self):
+        """A crashing view gets the site's own standalone 500 page."""
+        self.client.raise_request_exception = False
+        with self.assertLogs("django.request", level="ERROR"):
+            r = self.client.get("/boom/")
+        self.assertEqual(r.status_code, 500)
+        self.assertContains(r, "Something broke", status_code=500)
+
+
+def _crash(request):
+    """A view that always fails, to exercise the 500 page."""
+    raise RuntimeError("boom")
+
+
+urlpatterns = [path("boom/", _crash)]
 
 
 @override_settings(
